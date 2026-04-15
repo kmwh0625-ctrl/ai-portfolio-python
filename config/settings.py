@@ -82,9 +82,33 @@ TIME_ZONE = 'Asia/Seoul'
 USE_I18N = True
 USE_TZ = True
 
+# STATIC_URL = '/static/'
+# STATIC_ROOT = BASE_DIR / 'staticfiles'
+# STATICFILES_DIRS = [BASE_DIR / 'static']
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# MEDIA_URL = '/media/'
+# MEDIA_ROOT = BASE_DIR / 'media'
+
+# DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# # File upload settings
+# FILE_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024  # 5MB
+# DATA_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
+
+import os # 파일 경로 확인을 위해 상단에 이게 있어야 합니다
+
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_DIRS = [BASE_DIR / 'static']
+
+# 서버에 static 폴더가 실제로 있을 때만 리스트에 넣도록 안전하게 설정
+STATIC_DIRS_PATH = BASE_DIR / 'static'
+if STATIC_DIRS_PATH.exists():
+    STATICFILES_DIRS = [STATIC_DIRS_PATH]
+else:
+    STATICFILES_DIRS = []
+
+# Whitenoise 설정 (그대로 유지)
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
@@ -92,6 +116,6 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# File upload settings
+# File upload settings (그대로 유지)
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024  # 5MB
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
