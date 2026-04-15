@@ -119,3 +119,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # File upload settings (그대로 유지)
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024  # 5MB
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
+
+# settings.py 맨 하단에 추가
+CSRF_TRUSTED_ORIGINS = [
+    'https://ai-portfolio-python-production.up.railway.app', # 본인의 실제 사이트 주소를 넣으세요
+]

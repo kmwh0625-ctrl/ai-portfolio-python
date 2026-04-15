@@ -390,14 +390,26 @@
     overflow: hidden;
   }
 
-  .skill-fill {
+  /* .skill-fill {
     height: 100%;
     border-radius: 3px;
     background: linear-gradient(90deg, var(--green), var(--accent));
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 1.2s cubic-bezier(.4,0,.2,1);
-  }
+  } */
+
+  .skill-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--green), var(--accent));
+    /* transform: scaleX(0);  <-- 이 부분을 주석 처리하거나 지우세요 */
+    /* transform-origin: left; <-- 지우세요 */
+    width: 0; /* 기본값을 0으로 */
+    transition: width 1.2s cubic-bezier(.4,0,.2,1);
+}
+
+/* .animated 관련 부분은 지우거나 무시해도 됩니다 */
 
   .skill-fill.animated { transform: scaleX(1); }
 
@@ -606,7 +618,7 @@
       <h2 class="section-title">프로젝트 포트폴리오</h2>
       <p class="section-subtitle">실제로 구현하고 배포한 프로젝트들입니다.</p>
     </div>
-
+<!-- 아무거나 -->
     <div class="projects-grid">
       {% if all_projects %}
         {% for project in all_projects %}
