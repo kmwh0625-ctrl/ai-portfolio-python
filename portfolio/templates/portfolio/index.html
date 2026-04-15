@@ -403,15 +403,18 @@
     height: 100%;
     border-radius: 3px;
     background: linear-gradient(90deg, var(--green), var(--accent));
-    /* transform: scaleX(0);  <-- 이 부분을 주석 처리하거나 지우세요 */
-    /* transform-origin: left; <-- 지우세요 */
-    width: 0; /* 기본값을 0으로 */
-    transition: width 1.2s cubic-bezier(.4,0,.2,1);
+    
+    /* 애니메이션 방식 변경: transform 대신 width 사용 */
+    width: 0; 
+    display: block !important; /* 무조건 보이게 강제 */
+    transition: width 1.2s cubic-bezier(.4, 0, .2, 1);
 }
 
-/* .animated 관련 부분은 지우거나 무시해도 됩니다 */
-
-  .skill-fill.animated { transform: scaleX(1); }
+/* 아래 클래스는 이제 필요 없지만, 혹시 JS가 실행될 때를 대비해 width를 유지해줍니다 */
+.skill-fill.animated {
+    /* 이미 HTML style="width: 70%" 등이 적용되어 있다면 이 클래스는 무시됩니다 */
+}
+  /* .skill-fill.animated { transform: scaleX(1); } */
 
   /* default skill groups when DB empty */
   .skills-default-grid {
@@ -510,7 +513,7 @@
     <div class="hero-text">
       <div class="hero-eyebrow"><span></span>신입 PYTHON & AI 개발자 김원형 포트폴리오</div>
       <h1 class="hero-title">
-        AI로 만드는<br>
+        신입 python개발자가 AI로 만드는<br>
         <span class="highlight">미래의 솔루션</span>
       </h1>
       <p class="hero-desc">
@@ -609,7 +612,7 @@
     </a>
   </div>
 </div>
-# Update Test 1
+
 <!-- PROJECTS -->
 <section class="section" id="projects">
   <div class="container">
