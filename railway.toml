@@ -2,7 +2,7 @@
 builder = "NIXPACKS"
 
 [deploy]
-startCommand = "python manage.py migrate && gunicorn config.wsgi --bind 0.0.0.0:$PORT --log-file -"
+startCommand = "python manage.py migrate && gunicorn config.wsgi --bind 0.0.0.0:$PORT"
 healthcheckPath = "/"
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
