@@ -78,12 +78,30 @@
 # whitenoise==6.6.0
 # wrapt==1.14.2
 
-django
-django-dotenv
-python-decouple
-gunicorn
-tensorflow
-pillow
-whitenoise
-requests
-numpy
+# django
+# django-dotenv
+# python-decouple
+# gunicorn
+# tensorflow
+# pillow
+# whitenoise
+# requests
+# numpy
+
+# 핵심 웹 프레임워크
+Django==4.2.7
+gunicorn==21.2.0
+whitenoise==6.6.0
+python-decouple==3.8
+django-dotenv==1.4.2
+
+# 데이터 및 통신
+numpy==1.24.4
+requests==2.31.0
+Pillow==10.1.0
+
+# AI 관련 (가장 무거운 것들 - CPU 버전으로 최적화)
+--find-links https://download.pytorch.org/whl/cpu/torch_stable.html
+torch==2.1.0+cpu
+transformers==4.35.2
+tensorflow-cpu==2.14.0  # tensorflow-macos는 삭제하고 cpu 버전으로 변경
