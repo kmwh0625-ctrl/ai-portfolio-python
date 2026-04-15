@@ -1,0 +1,775 @@
+{% extends "base.html" %}
+
+{% block title %}홈{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ── HERO ── */
+  .hero {
+    background: linear-gradient(135deg, var(--navy) 0%, #2d3a6a 60%, var(--navy-light) 100%);
+    color: white;
+    padding: 100px 24px 80px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -120px;
+    right: -120px;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,201,167,.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -80px;
+    left: -80px;
+    width: 360px;
+    height: 360px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,131,109,.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0,201,167,.15);
+    border: 1px solid rgba(0,201,167,.3);
+    color: var(--accent);
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  .hero-eyebrow span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: .5; transform: scale(1.4); }
+  }
+
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(36px, 5vw, 60px);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 20px;
+  }
+
+  .hero-title .highlight {
+    color: var(--accent);
+    position: relative;
+  }
+
+  .hero-desc {
+    font-size: 17px;
+    color: rgba(255,255,255,.75);
+    line-height: 1.8;
+    margin-bottom: 36px;
+    max-width: 460px;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .hero-btn-primary {
+    background: var(--accent);
+    color: var(--navy);
+    font-weight: 700;
+  }
+
+  .hero-btn-primary:hover {
+    background: #00e6c0;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(0,201,167,.4);
+  }
+
+  .hero-btn-ghost {
+    background: rgba(255,255,255,.1);
+    color: white;
+    border-color: rgba(255,255,255,.2);
+  }
+
+  .hero-btn-ghost:hover {
+    background: rgba(255,255,255,.18);
+  }
+
+  .hero-visual {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .hero-card-stack {
+    position: relative;
+    width: 340px;
+    height: 340px;
+  }
+
+  .floating-card {
+    position: absolute;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.15);
+    backdrop-filter: blur(12px);
+    border-radius: 16px;
+    padding: 20px;
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .floating-card:nth-child(1) {
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    animation-delay: 0s;
+  }
+
+  .floating-card:nth-child(2) {
+    bottom: 20px;
+    left: 40px;
+    right: 40px;
+    animation-delay: 2s;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-12px); }
+  }
+
+  .fc-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .fc-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .fc-bar-label { font-size: 12px; color: rgba(255,255,255,.8); width: 80px; }
+  .fc-bar-track { flex: 1; height: 6px; background: rgba(255,255,255,.1); border-radius: 3px; overflow: hidden; }
+  .fc-bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--green), var(--accent)); }
+
+  .fc-result { font-size: 15px; font-weight: 700; color: white; margin-bottom: 6px; }
+  .fc-score {
+    font-family: var(--font-mono);
+    font-size: 28px;
+    font-weight: 500;
+    color: var(--accent);
+  }
+  .fc-meta { font-size: 12px; color: rgba(255,255,255,.5); margin-top: 4px; }
+
+  /* ── STATS STRIP ── */
+  .stats-strip {
+    background: var(--green);
+    color: white;
+  }
+
+  .stats-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 24px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    text-align: center;
+  }
+
+  .stat-item { padding: 0 24px; }
+  .stat-item + .stat-item { border-left: 1px solid rgba(255,255,255,.2); }
+
+  .stat-number {
+    font-family: var(--font-display);
+    font-size: 36px;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .stat-label { font-size: 13px; opacity: .8; }
+
+  /* ── QUICK ACCESS ── */
+  .quick-access {
+    padding: 40px 24px;
+    background: var(--gray-100);
+  }
+
+  .quick-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+
+  .quick-card {
+    background: white;
+    border-radius: var(--radius);
+    padding: 24px 20px;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border: 1px solid var(--gray-200);
+    transition: var(--transition);
+  }
+
+  .quick-card:hover {
+    border-color: var(--green);
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-2px);
+  }
+
+  .quick-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: var(--green-light);
+    color: var(--green);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .quick-title { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 2px; }
+  .quick-sub { font-size: 12px; color: var(--gray-500); }
+
+  /* ── PROJECTS ── */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 24px;
+  }
+
+  .project-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--gray-200);
+    overflow: hidden;
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .project-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-6px);
+    border-color: transparent;
+  }
+
+  .project-thumb {
+    height: 180px;
+    background: linear-gradient(135deg, var(--navy) 0%, #2d4a6a 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .project-thumb::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,.3));
+  }
+
+  .project-category-badge {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    background: rgba(255,255,255,.15);
+    backdrop-filter: blur(8px);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    z-index: 1;
+  }
+
+  .project-body { padding: 24px; flex: 1; display: flex; flex-direction: column; }
+  .project-title { font-size: 18px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+  .project-subtitle { font-size: 13px; color: var(--green); font-weight: 600; margin-bottom: 12px; }
+  .project-desc { font-size: 14px; color: var(--gray-500); line-height: 1.7; flex: 1; margin-bottom: 20px; }
+
+  .project-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+
+  .project-links { display: flex; gap: 10px; }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    grid-column: 1/-1;
+    text-align: center;
+    padding: 80px 24px;
+    color: var(--gray-500);
+  }
+
+  .empty-state-icon { font-size: 48px; margin-bottom: 16px; opacity: .3; }
+  .empty-state h3 { font-size: 18px; font-weight: 700; color: var(--gray-700); margin-bottom: 8px; }
+
+  /* ── SKILLS ── */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+  }
+
+  .skill-group {
+    background: white;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--gray-200);
+    padding: 28px;
+  }
+
+  .skill-group-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--green);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .skill-group-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--gray-200);
+  }
+
+  .skill-row { margin-bottom: 16px; }
+  .skill-meta { display: flex; justify-content: space-between; margin-bottom: 6px; }
+  .skill-name { font-size: 14px; font-weight: 600; color: var(--navy); }
+  .skill-pct { font-size: 12px; font-family: var(--font-mono); color: var(--gray-500); }
+
+  .skill-track {
+    height: 6px;
+    background: var(--gray-200);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .skill-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--green), var(--accent));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 1.2s cubic-bezier(.4,0,.2,1);
+  }
+
+  .skill-fill.animated { transform: scaleX(1); }
+
+  /* default skill groups when DB empty */
+  .skills-default-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 16px;
+  }
+
+  .skill-chip {
+    background: var(--gray-100);
+    border-radius: var(--radius);
+    padding: 16px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--navy);
+    border: 1px solid var(--gray-200);
+  }
+
+  .skill-chip i { display: block; font-size: 24px; margin-bottom: 8px; color: var(--green); }
+
+  /* ── DEMO CTA SECTION ── */
+  .demo-section { background: var(--gray-100); }
+
+  .demo-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .demo-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    border: 1px solid var(--gray-200);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: var(--transition);
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .demo-card:hover {
+    border-color: var(--green);
+    box-shadow: 0 12px 40px rgba(0,131,109,.12);
+    transform: translateY(-4px);
+  }
+
+  .demo-card-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, var(--green), var(--accent));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: white;
+  }
+
+  .demo-card-title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+  }
+
+  .demo-card-desc { font-size: 14px; color: var(--gray-500); line-height: 1.7; flex: 1; }
+
+  .demo-card-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--green);
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  @media (max-width: 768px) {
+    .hero-inner { grid-template-columns: 1fr; gap: 40px; }
+    .hero-visual { display: none; }
+    .stats-inner { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+    .stat-item + .stat-item { border-left: none; }
+    .quick-inner { grid-template-columns: repeat(2, 1fr); }
+    .demo-cards { grid-template-columns: 1fr; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="hero-eyebrow"><span></span>신입 AI 개발자 포트폴리오</div>
+      <h1 class="hero-title">
+        AI로 만드는<br>
+        <span class="highlight">미래의 솔루션</span>
+      </h1>
+      <p class="hero-desc">
+        Django와 TensorFlow를 활용해 실용적인 AI 서비스를 개발합니다.
+        머신러닝부터 웹 풀스택까지, 데이터를 가치로 바꾸는 개발자입니다.
+      </p>
+      <div class="hero-actions">
+        <a href="#projects" class="btn hero-btn-primary"><i class="fas fa-folder-open"></i> 프로젝트 보기</a>
+        <a href="/ai/image/" class="btn hero-btn-ghost"><i class="fas fa-play"></i> AI 데모 체험</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-card-stack">
+        <div class="floating-card">
+          <div class="fc-label"><i class="fas fa-chart-bar"></i> 기술 숙련도</div>
+          <div class="fc-bar-row">
+            <span class="fc-bar-label">Python</span>
+            <div class="fc-bar-track"><div class="fc-bar-fill" style="width:90%"></div></div>
+          </div>
+          <div class="fc-bar-row">
+            <span class="fc-bar-label">TensorFlow</span>
+            <div class="fc-bar-track"><div class="fc-bar-fill" style="width:78%"></div></div>
+          </div>
+          <div class="fc-bar-row">
+            <span class="fc-bar-label">Django</span>
+            <div class="fc-bar-track"><div class="fc-bar-fill" style="width:85%"></div></div>
+          </div>
+          <div class="fc-bar-row">
+            <span class="fc-bar-label">React</span>
+            <div class="fc-bar-track"><div class="fc-bar-fill" style="width:65%"></div></div>
+          </div>
+        </div>
+        <div class="floating-card">
+          <div class="fc-label"><i class="fas fa-robot"></i> MobileNet 분류 결과</div>
+          <div class="fc-result">Golden Retriever 🐕</div>
+          <div class="fc-score">94.2%</div>
+          <div class="fc-meta">ImageNet 1000 클래스 분류</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-strip">
+  <div class="stats-inner">
+    <div class="stat-item">
+      <div class="stat-number">{{ all_projects.count|default:"10" }}+</div>
+      <div class="stat-label">완성 프로젝트</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number">3+</div>
+      <div class="stat-label">AI 모델 경험</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number">94%</div>
+      <div class="stat-label">모델 정확도</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number">GitHub</div>
+      <div class="stat-label">오픈소스 기여</div>
+    </div>
+  </div>
+</div>
+
+<!-- QUICK ACCESS -->
+<div class="quick-access">
+  <div class="quick-inner">
+    <a href="/ai/image/" class="quick-card">
+      <div class="quick-icon"><i class="fas fa-image"></i></div>
+      <div>
+        <div class="quick-title">이미지 분류</div>
+        <div class="quick-sub">MobileNet 데모</div>
+      </div>
+    </a>
+    <a href="/ai/sentiment/" class="quick-card">
+      <div class="quick-icon"><i class="fas fa-comment-dots"></i></div>
+      <div>
+        <div class="quick-title">감성 분석</div>
+        <div class="quick-sub">HuggingFace 데모</div>
+      </div>
+    </a>
+    <a href="#projects" class="quick-card">
+      <div class="quick-icon"><i class="fas fa-code-branch"></i></div>
+      <div>
+        <div class="quick-title">프로젝트</div>
+        <div class="quick-sub">전체 포트폴리오</div>
+      </div>
+    </a>
+    <a href="/contact/" class="quick-card">
+      <div class="quick-icon"><i class="fas fa-paper-plane"></i></div>
+      <div>
+        <div class="quick-title">연락하기</div>
+        <div class="quick-sub">채용 / 협업 문의</div>
+      </div>
+    </a>
+  </div>
+</div>
+
+<!-- PROJECTS -->
+<section class="section" id="projects">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag"><i class="fas fa-folder-open"></i> Projects</div>
+      <h2 class="section-title">프로젝트 포트폴리오</h2>
+      <p class="section-subtitle">실제로 구현하고 배포한 프로젝트들입니다.</p>
+    </div>
+
+    <div class="projects-grid">
+      {% if all_projects %}
+        {% for project in all_projects %}
+        <div class="project-card">
+       <div class="project-thumb" style="background: linear-gradient(135deg, {% cycle '#1a2340' '#005a4b' '#2d3a6a' '#1a3a30' %} 0%, {% cycle '#2d3a6a' '#00836d' '#3d4f8a' '#2a5040' %} 100%);">
+            <span style="font-size:52px;z-index:1;position:relative">
+              {% if project.category == 'ai' %}🤖{% elif project.category == 'web' %}🌐{% elif project.category == 'data' %}📊{% else %}💡{% endif %}
+            </span>
+            <span class="project-category-badge">{{ project.get_category_display }}</span>
+          </div>
+          <div class="project-body">
+            <div class="project-title">{{ project.title }}</div>
+            {% if project.subtitle %}<div class="project-subtitle">{{ project.subtitle }}</div>{% endif %}
+            <div class="project-desc">{{ project.description|truncatewords:30 }}</div>
+            <div class="project-tags">
+              {% for tech in project.get_tech_list %}
+                <span class="tag">{{ tech }}</span>
+              {% endfor %}
+            </div>
+            <div class="project-links">
+              {% if project.github_url %}
+              <a href="{{ project.github_url }}" target="_blank" class="btn btn-ghost" style="font-size:13px;padding:8px 14px">
+                <i class="fab fa-github"></i> GitHub
+              </a>
+              {% endif %}
+              {% if project.demo_url %}
+              <a href="{{ project.demo_url }}" target="_blank" class="btn btn-primary" style="font-size:13px;padding:8px 14px">
+                <i class="fas fa-external-link-alt"></i> 데모
+              </a>
+              {% endif %}
+              <a href="/project/{{ project.pk }}/" class="btn btn-outline" style="font-size:13px;padding:8px 14px">자세히 보기</a>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <!-- Default sample projects when DB is empty -->
+        {% for i in "123" %}
+        <div class="project-card">
+          <div class="project-thumb" style="background:linear-gradient(135deg,#1a2340 0%,#00836d 100%)">
+            <span style="font-size:52px;z-index:1;position:relative">🤖</span>
+            <span class="project-category-badge">AI / ML</span>
+          </div>
+          <div class="project-body">
+            <div class="project-title">이미지 분류 시스템</div>
+            <div class="project-subtitle">MobileNetV2 기반 실시간 분류기</div>
+            <div class="project-desc">TensorFlow와 MobileNetV2를 활용한 실시간 이미지 분류 웹 애플리케이션. ImageNet 1000 클래스 지원.</div>
+            <div class="project-tags">
+              <span class="tag">Python</span>
+              <span class="tag">TensorFlow</span>
+              <span class="tag">Django</span>
+              <span class="tag">MobileNet</span>
+            </div>
+            <div class="project-links">
+              <a href="/ai/image/" class="btn btn-primary" style="font-size:13px;padding:8px 14px"><i class="fas fa-play"></i> 데모 보기</a>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+        <p style="color:var(--gray-500);font-size:13px;grid-column:1/-1;text-align:center;padding:8px 0">
+          💡 Admin 페이지에서 프로젝트를 추가하면 이 목록에 표시됩니다.
+        </p>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<!-- AI DEMO CTA -->
+<section class="section demo-section" id="demos">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag"><i class="fas fa-robot"></i> AI Demo</div>
+      <h2 class="section-title">AI 데모 체험</h2>
+      <p class="section-subtitle">직접 실행해보는 AI 기능 데모</p>
+    </div>
+    <div class="demo-cards">
+      <a href="/ai/image/" class="demo-card">
+        <div class="demo-card-icon"><i class="fas fa-camera"></i></div>
+        <div class="demo-card-title">이미지 분류</div>
+        <div class="demo-card-desc">
+          TensorFlow의 MobileNetV2 모델을 활용해 업로드한 이미지를 1000가지 카테고리로 분류합니다.
+          실시간으로 상위 5개 예측 결과와 확률을 확인할 수 있습니다.
+        </div>
+        <span class="demo-card-link">데모 체험하기 <i class="fas fa-arrow-right"></i></span>
+      </a>
+      <a href="/ai/sentiment/" class="demo-card">
+        <div class="demo-card-icon"><i class="fas fa-smile"></i></div>
+        <div class="demo-card-title">감성 분석</div>
+        <div class="demo-card-desc">
+          HuggingFace Transformers 기반의 한국어 감성 분석 모델로 텍스트의 긍정/부정/중립 감정을
+          분석하고 확률과 함께 시각화합니다.
+        </div>
+        <span class="demo-card-link">데모 체험하기 <i class="fas fa-arrow-right"></i></span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section class="section" id="skills">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag"><i class="fas fa-code"></i> Skills</div>
+      <h2 class="section-title">기술 스택</h2>
+      <p class="section-subtitle">개발에 활용하는 기술들입니다.</p>
+    </div>
+
+    <div class="skills-grid">
+      <div class="skill-group">
+        <div class="skill-group-title">AI / ML</div>
+        <div class="skill-row">
+          <div class="skill-meta"><span class="skill-name">TensorFlow, PyTorch</span><span class="skill-pct">80%</span></div>
+          <div class="skill-track"><div class="skill-fill" style="width: 80%" data-pct="80"></div></div>
+        </div>
+        <div class="skill-row">
+          <div class="skill-meta"><span class="skill-name">HuggingFace, NumPy</span><span class="skill-pct">80%</span></div>
+          <div class="skill-track"><div class="skill-fill" style="width: 80%" data-pct="80"></div></div>
+        </div>
+      </div>
+
+      <div class="skill-group">
+        <div class="skill-group-title">Backend</div>
+        <div class="skill-row">
+          <div class="skill-meta"><span class="skill-name">Python, Django</span><span class="skill-pct">85%</span></div>
+          <div class="skill-track"><div class="skill-fill" style="width: 85%" data-pct="85"></div></div>
+        </div>
+        <div class="skill-row">
+          <div class="skill-meta"><span class="skill-name">FastAPI, SQLite</span><span class="skill-pct">85%</span></div>
+          <div class="skill-track"><div class="skill-fill" style="width: 85%" data-pct="85"></div></div>
+        </div>
+      </div>
+
+      <div class="skill-group">
+        <div class="skill-group-title">Frontend</div>
+        <div class="skill-row">
+          <div class="skill-meta"><span class="skill-name">JavaScript, HTML/CSS</span><span class="skill-pct">70%</span></div>
+          <div class="skill-track"><div class="skill-fill" style="width: 70%" data-pct="70"></div></div>
+        </div>
+        <div class="skill-row">
+          <div class="skill-meta"><span class="skill-name">React, Tailwind CSS</span><span class="skill-pct">70%</span></div>
+          <div class="skill-track"><div class="skill-fill" style="width: 70%" data-pct="70"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Animate skill bars on scroll
+  const fills = document.querySelectorAll('.skill-fill');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const pct = e.target.dataset.pct;
+        e.target.style.width = pct + '%';
+        e.target.classList.add('animated');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: .3 });
+  fills.forEach(f => observer.observe(f));
+</script>
+{% endblock %}

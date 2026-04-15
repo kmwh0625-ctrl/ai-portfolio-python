@@ -1,0 +1,326 @@
+{% extends "base.html" %}
+{% block title %}연락하기{% endblock %}
+
+{% block extra_css %}
+<style>
+  .contact-hero {
+    background: linear-gradient(135deg, var(--navy) 0%, #2d3a6a 100%);
+    color: white;
+    padding: 60px 24px;
+    text-align: center;
+  }
+  .contact-hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0,201,167,.15);
+    border: 1px solid rgba(0,201,167,.3);
+    color: var(--accent);
+    padding: 5px 14px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .contact-hero h1 { font-family: var(--font-display); font-size: clamp(28px, 4vw, 46px); font-weight: 800; margin-bottom: 14px; }
+  .contact-hero p { color: rgba(255,255,255,.7); font-size: 16px; }
+
+  .contact-layout {
+    max-width: 1000px;
+    margin: 60px auto;
+    padding: 0 24px;
+    display: grid;
+    grid-template-columns: 1fr 1.6fr;
+    gap: 28px;
+    align-items: start;
+  }
+
+  .info-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .info-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--gray-200);
+    padding: 24px;
+  }
+
+  .info-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .info-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--green-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--green);
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .info-card-title { font-weight: 700; color: var(--navy); font-size: 15px; }
+  .info-card-sub { font-size: 12px; color: var(--gray-500); }
+
+  .info-card p { font-size: 14px; color: var(--gray-700); line-height: 1.8; }
+
+  .availability {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .avail-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #22c55e;
+    animation: pulse 2s infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.4)} }
+
+  .avail-text { font-size: 13px; font-weight: 600; color: #16a34a; }
+
+  .social-links { display: flex; gap: 10px; margin-top: 12px; }
+
+  .social-link {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--gray-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gray-700);
+    text-decoration: none;
+    font-size: 16px;
+    transition: var(--transition);
+    border: 1px solid var(--gray-200);
+  }
+
+  .social-link:hover { background: var(--green); color: white; border-color: var(--green); }
+
+  /* Form Panel */
+  .form-panel {
+    background: white;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--gray-200);
+    overflow: hidden;
+  }
+
+  .form-header {
+    background: var(--gray-100);
+    border-bottom: 1px solid var(--gray-200);
+    padding: 20px 28px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .form-header-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
+    background: var(--green);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 16px;
+  }
+
+  .form-header-title { font-weight: 700; color: var(--navy); font-size: 16px; }
+  .form-header-sub { font-size: 12px; color: var(--gray-500); }
+
+  .form-body { padding: 28px; }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  .form-group { margin-bottom: 20px; }
+
+  .form-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 8px;
+  }
+
+  .form-label .required { color: var(--green); margin-left: 2px; }
+
+  .form-input, .form-textarea {
+    width: 100%;
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    font-family: var(--font-kr);
+    font-size: 14px;
+    color: var(--navy);
+    transition: var(--transition);
+    outline: none;
+    background: var(--gray-100);
+  }
+
+  .form-input:focus, .form-textarea:focus {
+    border-color: var(--green);
+    background: white;
+    box-shadow: 0 0 0 4px rgba(0,131,109,.08);
+  }
+
+  .form-input.error, .form-textarea.error {
+    border-color: #dc2626;
+    background: #fef2f2;
+  }
+
+  .form-textarea { min-height: 140px; resize: vertical; line-height: 1.7; }
+
+  .form-error { font-size: 12px; color: #dc2626; margin-top: 6px; display: flex; align-items: center; gap: 4px; }
+
+  .submit-btn {
+    width: 100%;
+    padding: 16px;
+    background: var(--green);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-family: var(--font-kr);
+  }
+
+  .submit-btn:hover { background: var(--green-dark); transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0,131,109,.3); }
+
+  .form-note {
+    text-align: center;
+    font-size: 12px;
+    color: var(--gray-500);
+    margin-top: 16px;
+  }
+
+  @media (max-width: 768px) {
+    .contact-layout { grid-template-columns: 1fr; }
+    .form-row { grid-template-columns: 1fr; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="contact-hero">
+  <div class="contact-hero-tag"><i class="fas fa-paper-plane"></i> Contact</div>
+  <h1>📬 연락하기</h1>
+  <p>채용 제안, 협업 문의 등 언제든지 연락해주세요!</p>
+</div>
+
+<div class="contact-layout">
+  <!-- Info -->
+  <div class="info-panel">
+    <div class="info-card">
+      <div class="info-card-header">
+        <div class="info-icon"><i class="fas fa-user"></i></div>
+        <div>
+          <div class="info-card-title">신입 AI 개발자</div>
+          <div class="info-card-sub">Django · TensorFlow · Python</div>
+        </div>
+      </div>
+      <p>AI와 웹 개발을 결합한 실용적인 서비스를 만들고 싶은 신입 개발자입니다. 새로운 기술 배우기를 즐기며 적극적으로 성장하겠습니다.</p>
+      <div class="availability">
+        <div class="avail-dot"></div>
+        <span class="avail-text">현재 취업 기회를 찾고 있습니다</span>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-header">
+        <div class="info-icon"><i class="fas fa-envelope"></i></div>
+        <div>
+          <div class="info-card-title">연락처</div>
+          <div class="info-card-sub">빠른 답변 드리겠습니다</div>
+        </div>
+      </div>
+      <p>📧 your.email@gmail.com<br>📱 010-0000-0000</p>
+      <div class="social-links" style="margin-top:14px">
+        <a href="#" class="social-link" title="GitHub"><i class="fab fa-github"></i></a>
+        <a href="#" class="social-link" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+        <a href="#" class="social-link" title="Blog"><i class="fas fa-blog"></i></a>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-header">
+        <div class="info-icon"><i class="fas fa-clock"></i></div>
+        <div>
+          <div class="info-card-title">응답 시간</div>
+          <div class="info-card-sub">평균 응답 시간</div>
+        </div>
+      </div>
+      <p>📅 평일 기준 <strong>24시간 이내</strong> 답변드립니다.</p>
+    </div>
+  </div>
+
+  <!-- Form -->
+  <div class="form-panel">
+    <div class="form-header">
+      <div class="form-header-icon"><i class="fas fa-edit"></i></div>
+      <div>
+        <div class="form-header-title">메시지 보내기</div>
+        <div class="form-header-sub">모든 항목을 입력해 주세요</div>
+      </div>
+    </div>
+    <div class="form-body">
+      <form method="POST" action="/contact/">
+        {% csrf_token %}
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">이름 <span class="required">*</span></label>
+            <input type="text" name="name" class="form-input {% if errors.name %}error{% endif %}"
+              placeholder="홍길동" value="{{ form_data.name|default:'' }}" />
+            {% if errors.name %}<div class="form-error"><i class="fas fa-exclamation-circle"></i> {{ errors.name }}</div>{% endif %}
+          </div>
+          <div class="form-group">
+            <label class="form-label">이메일 <span class="required">*</span></label>
+            <input type="email" name="email" class="form-input {% if errors.email %}error{% endif %}"
+              placeholder="example@email.com" value="{{ form_data.email|default:'' }}" />
+            {% if errors.email %}<div class="form-error"><i class="fas fa-exclamation-circle"></i> {{ errors.email }}</div>{% endif %}
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">제목 <span class="required">*</span></label>
+          <input type="text" name="subject" class="form-input {% if errors.subject %}error{% endif %}"
+            placeholder="채용 문의 / 협업 제안 등" value="{{ form_data.subject|default:'' }}" />
+          {% if errors.subject %}<div class="form-error"><i class="fas fa-exclamation-circle"></i> {{ errors.subject }}</div>{% endif %}
+        </div>
+        <div class="form-group">
+          <label class="form-label">메시지 <span class="required">*</span></label>
+          <textarea name="message" class="form-textarea {% if errors.message %}error{% endif %}"
+            placeholder="안녕하세요! 문의 내용을 자유롭게 작성해주세요 😊">{{ form_data.message|default:'' }}</textarea>
+          {% if errors.message %}<div class="form-error"><i class="fas fa-exclamation-circle"></i> {{ errors.message }}</div>{% endif %}
+        </div>
+        <button type="submit" class="submit-btn">
+          <i class="fas fa-paper-plane"></i> 메시지 전송하기
+        </button>
+        <p class="form-note">✅ 메시지는 데이터베이스에 안전하게 저장됩니다</p>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

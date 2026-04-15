@@ -1,0 +1,405 @@
+{% extends "base.html" %}
+{% block title %}이미지 분류 데모{% endblock %}
+
+{% block extra_css %}
+<style>
+  .demo-hero {
+    background: linear-gradient(135deg, var(--navy) 0%, #2d3a6a 100%);
+    color: white;
+    padding: 60px 24px;
+    text-align: center;
+  }
+  .demo-hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0,201,167,.15);
+    border: 1px solid rgba(0,201,167,.3);
+    color: var(--accent);
+    padding: 5px 14px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .demo-hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 4vw, 46px);
+    font-weight: 800;
+    margin-bottom: 14px;
+  }
+  .demo-hero p { color: rgba(255,255,255,.7); font-size: 16px; }
+
+  .demo-layout {
+    max-width: 900px;
+    margin: 60px auto;
+    padding: 0 24px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    align-items: start;
+  }
+
+  .panel {
+    background: white;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--gray-200);
+    overflow: hidden;
+  }
+
+  .panel-header {
+    background: var(--gray-100);
+    border-bottom: 1px solid var(--gray-200);
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .panel-header-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: var(--green);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 15px;
+  }
+
+  .panel-header-title { font-weight: 700; color: var(--navy); font-size: 15px; }
+  .panel-body { padding: 24px; }
+
+  /* Upload zone */
+  .upload-zone {
+    border: 2px dashed var(--gray-300);
+    border-radius: var(--radius);
+    padding: 48px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+  }
+
+  .upload-zone:hover, .upload-zone.dragover {
+    border-color: var(--green);
+    background: var(--green-light);
+  }
+
+  .upload-zone input[type=file] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .upload-icon { font-size: 40px; margin-bottom: 12px; color: var(--gray-300); }
+  .upload-title { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+  .upload-sub { font-size: 13px; color: var(--gray-500); }
+
+  .preview-box {
+    margin-top: 16px;
+    display: none;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .preview-box img {
+    width: 100%;
+    max-height: 240px;
+    object-fit: cover;
+    display: block;
+  }
+
+  .submit-btn {
+    width: 100%;
+    margin-top: 16px;
+    padding: 14px;
+    background: var(--green);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: var(--font-kr);
+  }
+
+  .submit-btn:hover { background: var(--green-dark); }
+  .submit-btn:disabled { opacity: .6; cursor: not-allowed; }
+
+  /* Results */
+  .result-empty {
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--gray-500);
+  }
+  .result-empty-icon { font-size: 40px; margin-bottom: 12px; opacity: .3; }
+
+  .result-item {
+    margin-bottom: 16px;
+  }
+
+  .result-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+
+  .result-label { font-size: 14px; font-weight: 600; color: var(--navy); }
+  .result-pct {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--green);
+  }
+
+  .result-track {
+    height: 8px;
+    background: var(--gray-200);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .result-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--green), var(--accent));
+    transition: width 1s cubic-bezier(.4,0,.2,1);
+    width: 0;
+  }
+
+  .result-rank-1 .result-fill { background: linear-gradient(90deg, var(--green), var(--accent)); }
+  .result-rank-2 .result-fill { background: linear-gradient(90deg, #0077cc, #00aaff); }
+  .result-rank-3 .result-fill, .result-rank-4 .result-fill, .result-rank-5 .result-fill {
+    background: linear-gradient(90deg, var(--gray-300), var(--gray-500));
+  }
+
+  .top-result {
+    background: var(--green-light);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    border-left: 4px solid var(--green);
+  }
+  .top-result-label { font-size: 12px; font-weight: 700; color: var(--green-dark); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 4px; }
+  .top-result-name { font-size: 20px; font-weight: 800; color: var(--navy); margin-bottom: 2px; }
+  .top-result-score { font-family: var(--font-mono); font-size: 26px; font-weight: 500; color: var(--green); }
+
+  .loading-state {
+    text-align: center;
+    padding: 48px 24px;
+    display: none;
+  }
+
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--gray-200);
+    border-top-color: var(--green);
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+    margin: 0 auto 16px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .demo-badge {
+    background: #fef3c7;
+    border: 1px solid #fcd34d;
+    color: #92400e;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-top: 8px;
+    display: inline-block;
+  }
+
+  .info-box {
+    background: var(--gray-100);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin-top: 24px;
+    font-size: 13px;
+    color: var(--gray-700);
+    line-height: 1.7;
+  }
+
+  .info-box strong { color: var(--navy); }
+
+  @media (max-width: 700px) {
+    .demo-layout { grid-template-columns: 1fr; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="demo-hero">
+  <div class="demo-hero-tag"><i class="fas fa-camera"></i> AI Demo</div>
+  <h1>🖼️ 이미지 분류 데모</h1>
+  <p>이미지를 업로드하면 MobileNetV2가 실시간으로 분석합니다</p>
+</div>
+
+<div class="demo-layout">
+  <!-- Upload Panel -->
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-header-icon"><i class="fas fa-upload"></i></div>
+      <div class="panel-header-title">이미지 업로드</div>
+    </div>
+    <div class="panel-body">
+      <div class="upload-zone" id="uploadZone">
+        <input type="file" id="imageInput" accept="image/*" />
+        <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+        <div class="upload-title">이미지를 클릭하거나 드래그하세요</div>
+        <div class="upload-sub">JPG, PNG, WEBP · 최대 5MB</div>
+      </div>
+      <div class="preview-box" id="previewBox">
+        <img id="previewImg" src="" alt="미리보기" />
+      </div>
+      <button class="submit-btn" id="classifyBtn" onclick="classify()" disabled>
+        <i class="fas fa-robot"></i> AI 분류 시작
+      </button>
+      <div class="info-box">
+        <strong>사용 모델:</strong> TensorFlow MobileNetV2<br>
+        <strong>분류 범위:</strong> ImageNet 1000가지 카테고리<br>
+        <strong>특징:</strong> 경량화 모델로 빠른 추론 속도
+      </div>
+    </div>
+  </div>
+
+  <!-- Result Panel -->
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-header-icon"><i class="fas fa-chart-bar"></i></div>
+      <div class="panel-header-title">분류 결과</div>
+    </div>
+    <div class="panel-body">
+      <div class="loading-state" id="loadingState">
+        <div class="spinner"></div>
+        <p style="color:var(--gray-500);font-size:14px">AI가 이미지를 분석하고 있어요...</p>
+      </div>
+      <div id="resultEmpty" class="result-empty">
+        <div class="result-empty-icon"><i class="fas fa-image"></i></div>
+        <p style="font-size:14px">이미지를 업로드하면<br>분류 결과가 여기에 표시됩니다</p>
+      </div>
+      <div id="resultContent" style="display:none">
+        <div class="top-result" id="topResult"></div>
+        <div id="resultBars"></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const input = document.getElementById('imageInput');
+  const zone = document.getElementById('uploadZone');
+  const preview = document.getElementById('previewBox');
+  const previewImg = document.getElementById('previewImg');
+  const btn = document.getElementById('classifyBtn');
+
+  input.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    previewImg.src = URL.createObjectURL(file);
+    preview.style.display = 'block';
+    btn.disabled = false;
+  });
+
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault();
+    zone.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) {
+      input.files = e.dataTransfer.files;
+      previewImg.src = URL.createObjectURL(file);
+      preview.style.display = 'block';
+      btn.disabled = false;
+    }
+  });
+
+  async function classify() {
+    const file = input.files[0];
+    if (!file) return;
+
+    document.getElementById('resultEmpty').style.display = 'none';
+    document.getElementById('resultContent').style.display = 'none';
+    document.getElementById('loadingState').style.display = 'block';
+    btn.disabled = true;
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      const res = await fetch('/ai/api/classify/', {
+        method: 'POST',
+        headers: { 'X-CSRFToken': getCookie('csrftoken') },
+        body: formData,
+      });
+      const data = await res.json();
+
+      document.getElementById('loadingState').style.display = 'none';
+
+      if (data.success) {
+        document.getElementById('resultContent').style.display = 'block';
+        const top = data.results[0];
+        document.getElementById('topResult').innerHTML = `
+          <div class="top-result-label">🏆 최고 신뢰도</div>
+          <div class="top-result-name">${top.label}</div>
+          <div class="top-result-score">${top.score}%</div>
+          ${data.demo ? '<div class="demo-badge">⚠️ 데모 데이터 (TF 미설치)</div>' : ''}
+        `;
+        const bars = document.getElementById('resultBars');
+        bars.innerHTML = data.results.map((r, i) => `
+          <div class="result-item result-rank-${i+1}">
+            <div class="result-meta">
+              <span class="result-label">${i+1}. ${r.label}</span>
+              <span class="result-pct">${r.score}%</span>
+            </div>
+            <div class="result-track">
+              <div class="result-fill" data-w="${r.score}"></div>
+            </div>
+          </div>
+        `).join('');
+        setTimeout(() => {
+          document.querySelectorAll('.result-fill').forEach(el => {
+            el.style.width = el.dataset.w + '%';
+          });
+        }, 50);
+      } else {
+        alert('오류: ' + (data.error || '알 수 없는 오류'));
+        document.getElementById('resultEmpty').style.display = 'block';
+      }
+    } catch (err) {
+      document.getElementById('loadingState').style.display = 'none';
+      document.getElementById('resultEmpty').style.display = 'block';
+      alert('서버 오류가 발생했습니다.');
+    }
+    btn.disabled = false;
+  }
+
+  function getCookie(name) {
+    let val = null;
+    document.cookie.split(';').forEach(c => {
+      c = c.trim();
+      if (c.startsWith(name + '=')) val = decodeURIComponent(c.slice(name.length + 1));
+    });
+    return val;
+  }
+</script>
+{% endblock %}

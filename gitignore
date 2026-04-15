@@ -1,0 +1,30 @@
+# Python 관련
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+
+# Django 관련
+*.log
+db.sqlite3
+/media/
+/staticfiles/
+
+# 환경변수 및 보안
+.env
+
+# IDE 및 OS 설정
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# 가상환경 (가장 중요!)
+venv/
+env/
+.venv/
