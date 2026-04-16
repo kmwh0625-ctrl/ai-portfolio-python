@@ -59,7 +59,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-# DATABASE_URL 있으면 PostgreSQL, 없으면 SQLite
 DATABASE_URL = config('DATABASE_URL', default=None)
 if DATABASE_URL:
     DATABASES = {'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)}
@@ -95,8 +94,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
 
-# Render CSRF 허용
+# Render + Railway CSRF 허용
 CSRF_TRUSTED_ORIGINS = [
-    'https://ai-portfolio-51tv.onrender.com',
     'https://*.onrender.com',
+    'https://*.railway.app',
 ]
