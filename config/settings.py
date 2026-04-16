@@ -4,6 +4,7 @@ Django settings - 로컬 / Render 모두 지원
 from pathlib import Path
 from decouple import config
 import dj_database_url
+import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
