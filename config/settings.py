@@ -93,3 +93,8 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
+
+# Render 배포 주소를 신뢰할 수 있는 도메인으로 등록 (메시지 전송 에러 방지)
+CSRF_TRUSTED_ORIGINS = [
+    'https://ai-portfolio-51tv.onrender.com'
+]
