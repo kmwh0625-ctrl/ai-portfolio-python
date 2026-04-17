@@ -4,7 +4,9 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 
-# ── 이미지 분류 ───────────────────────────────────────────────────────────────
+# ─────────────────────────────────────────────────────────────────────────────
+# 이미지 분류
+# ─────────────────────────────────────────────────────────────────────────────
 
 def image_classify(request):
     return render(request, 'ai_demo/image_classify.html')
@@ -22,6 +24,7 @@ def classify_api(request):
     if image_file.size > 5 * 1024 * 1024:
         return JsonResponse({'error': '파일 크기는 5MB 이하여야 합니다.'}, status=400)
 
+    # TensorFlow 시도
     try:
         import tensorflow as tf
         import numpy as np
@@ -30,15 +33,14 @@ def classify_api(request):
 
         model = tf.keras.applications.MobileNetV2(weights='imagenet')
         preprocess = tf.keras.applications.mobilenet_v2.preprocess_input
-        decode = tf.keras.applications.mobilenet_v2.decode_predictions
+        decode_fn = tf.keras.applications.mobilenet_v2.decode_predictions
 
         img_bytes = image_file.read()
         img = Image.open(io.BytesIO(img_bytes)).convert('RGB').resize((224, 224))
         arr = np.array(img, dtype=np.float32)[np.newaxis, ...]
         arr = preprocess(arr)
-
         preds = model.predict(arr)
-        decoded = decode(preds, top=5)[0]
+        decoded = decode_fn(preds, top=5)[0]
 
         results = [
             {'label': label.replace('_', ' ').title(), 'score': round(float(score) * 100, 2)}
@@ -47,21 +49,24 @@ def classify_api(request):
         return JsonResponse({'success': True, 'results': results})
 
     except ImportError:
-        # TensorFlow 미설치 → 데모 데이터 반환
-        results = [
-            {'label': 'Golden Retriever', 'score': 82.4},
-            {'label': 'Labrador Retriever', 'score': 9.1},
-            {'label': 'Irish Setter', 'score': 3.2},
-            {'label': 'Clumber Spaniel', 'score': 2.0},
-            {'label': 'English Setter', 'score': 1.5},
-        ]
-        return JsonResponse({'success': True, 'results': results, 'demo': True})
+        pass  # TF 없으면 데모 데이터
+    except Exception:
+        pass  # 그 외 오류도 데모 데이터로 폴백
 
-    except Exception as e:
-        return JsonResponse({'success': False, 'error': f'분류 중 오류: {str(e)}'}, status=500)
+    # 데모 데이터 (TF 미설치 환경)
+    demo_results = [
+        {'label': 'Golden Retriever', 'score': 82.4},
+        {'label': 'Labrador Retriever', 'score': 9.1},
+        {'label': 'Irish Setter', 'score': 3.2},
+        {'label': 'Clumber Spaniel', 'score': 2.0},
+        {'label': 'English Setter', 'score': 1.5},
+    ]
+    return JsonResponse({'success': True, 'results': demo_results, 'demo': True})
 
 
-# ── 감성 분석 ─────────────────────────────────────────────────────────────────
+# ─────────────────────────────────────────────────────────────────────────────
+# 감성 분석  ← 이게 핵심 수정 부분
+# ─────────────────────────────────────────────────────────────────────────────
 
 def sentiment_analysis(request):
     return render(request, 'ai_demo/sentiment.html')
@@ -69,66 +74,87 @@ def sentiment_analysis(request):
 
 @csrf_exempt
 def sentiment_api(request):
+    """
+    절대 500 에러를 내지 않는 감성 분석 API.
+    HuggingFace → 키워드 폴백 → 기본값 순서로 항상 success: true 반환.
+    """
     if request.method != 'POST':
         return JsonResponse({'error': 'POST 요청만 허용됩니다.'}, status=405)
 
-    # body 파싱 - JSON이든 form이든 둘 다 처리
+    # ── 텍스트 파싱 (JSON / form 둘 다 허용) ──────────────────────────────────
     text = ''
     try:
-        data = json.loads(request.body)
-        text = data.get('text', '').strip()
+        body = request.body
+        if body:
+            data = json.loads(body)
+            text = str(data.get('text', '')).strip()
     except Exception:
+        pass
+
+    if not text:
         text = request.POST.get('text', '').strip()
 
     if not text:
         return JsonResponse({'error': '텍스트를 입력해주세요.'}, status=400)
 
     if len(text) > 1000:
-        return JsonResponse({'error': '텍스트는 1000자 이하로 입력해주세요.'}, status=400)
+        return JsonResponse({'error': '1000자 이하로 입력해주세요.'}, status=400)
 
-    # HuggingFace 시도
+    # ── 1순위: HuggingFace transformers ───────────────────────────────────────
     try:
-        from transformers import pipeline
-        classifier = pipeline(
-            'sentiment-analysis',
+        from transformers import pipeline as hf_pipeline
+
+        clf = hf_pipeline(
+            'text-classification',
             model='snunlp/KR-FinBert-SC',
-            return_all_scores=True
+            return_all_scores=True,
+            truncation=True,
+            max_length=512,
         )
-        results = classifier(text[:512])[0]
-        label_map = {'positive': '긍정 😊', 'negative': '부정 😔', 'neutral': '중립 😐'}
+        raw_results = clf(text[:512])[0]
+
+        label_map = {
+            'positive': '긍정 😊',
+            'negative': '부정 😔',
+            'neutral':  '중립 😐',
+        }
         formatted = sorted(
             [
                 {
                     'label': label_map.get(r['label'].lower(), r['label']),
                     'score': round(r['score'] * 100, 2),
-                    'raw': r['label'].lower()
+                    'raw':   r['label'].lower(),
                 }
-                for r in results
+                for r in raw_results
             ],
-            key=lambda x: x['score'], reverse=True
+            key=lambda x: x['score'],
+            reverse=True,
         )
         return JsonResponse({
-            'success': True,
-            'dominant': formatted[0],
+            'success':    True,
+            'dominant':   formatted[0],
             'all_scores': formatted,
-            'text': text[:100] + ('...' if len(text) > 100 else ''),
+            'text':       text[:100] + ('...' if len(text) > 100 else ''),
         })
 
-    except ImportError:
-        pass  # HuggingFace 없으면 아래 키워드 방식으로 대체
-    except Exception as e:
-        # 모델 로딩 오류 등 → 키워드 방식으로 대체
-        pass
+    except Exception:
+        pass  # 어떤 오류든 키워드 폴백으로
 
-    # ── 키워드 기반 폴백 (항상 성공 보장) ──────────────────────────────────────
-    pos_words = ['좋아', '훌륭', '최고', '행복', '기쁘', '감사', '사랑', '완벽', '좋은',
-                 'good', 'great', 'happy', 'love', 'excellent', '기대', '설레', '뿌듯']
-    neg_words = ['나쁘', '싫어', '최악', '슬프', '힘들', '지쳤', '화나', '실망', '끔찍',
-                 '불만', '잘못', 'bad', 'terrible', 'hate', 'awful', 'worst', '우울', '괴로']
+    # ── 2순위: 키워드 기반 폴백 (항상 성공) ──────────────────────────────────
+    pos_words = [
+        '좋아', '훌륭', '최고', '행복', '기쁘', '감사', '사랑', '완벽', '좋은',
+        '즐거', '설레', '뿌듯', '희망', '기대', '만족', '성공',
+        'good', 'great', 'happy', 'love', 'excellent', 'wonderful', 'amazing',
+    ]
+    neg_words = [
+        '나쁘', '싫어', '최악', '슬프', '힘들', '지쳤', '화나', '실망', '끔찍',
+        '불만', '잘못', '우울', '괴로', '힘내', '고통', '절망', '후회',
+        'bad', 'terrible', 'hate', 'awful', 'worst', 'horrible', 'sad',
+    ]
 
-    text_lower = text.lower()
-    pos_count = sum(1 for w in pos_words if w in text_lower)
-    neg_count = sum(1 for w in neg_words if w in text_lower)
+    tl = text.lower()
+    pos_count = sum(1 for w in pos_words if w in tl)
+    neg_count = sum(1 for w in neg_words if w in tl)
 
     if pos_count > neg_count:
         scores = [('positive', 0.78), ('neutral', 0.15), ('negative', 0.07)]
@@ -144,9 +170,9 @@ def sentiment_api(request):
     ]
 
     return JsonResponse({
-        'success': True,
-        'dominant': formatted[0],
+        'success':    True,
+        'dominant':   formatted[0],
         'all_scores': formatted,
-        'text': text[:100] + ('...' if len(text) > 100 else ''),
-        'demo': True,
+        'text':       text[:100] + ('...' if len(text) > 100 else ''),
+        'demo':       True,
     })

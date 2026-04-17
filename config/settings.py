@@ -1,5 +1,5 @@
 """
-Django settings - 로컬 / Render 모두 지원
+Django settings - 로컬 / Railway / Render 모두 지원
 """
 from pathlib import Path
 from decouple import config
@@ -12,7 +12,7 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-local-dev-only')
 DEBUG = config('DEBUG', default=True, cast=bool)
 ALLOWED_HOSTS = config(
     'ALLOWED_HOSTS',
-    default='localhost,127.0.0.1,.onrender.com',
+    default='localhost,127.0.0.1,.onrender.com,.railway.app',
     cast=lambda v: [s.strip() for s in v.split(',')]
 )
 
@@ -94,8 +94,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
 
-# Render + Railway CSRF 허용
+# Railway + Render CSRF 모두 허용
 CSRF_TRUSTED_ORIGINS = [
     'https://*.onrender.com',
     'https://*.railway.app',
+    'https://*.up.railway.app',
 ]
