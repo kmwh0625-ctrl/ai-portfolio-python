@@ -10,11 +10,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-local-dev-only')
 DEBUG = config('DEBUG', default=True, cast=bool)
-ALLOWED_HOSTS = config(
-    'ALLOWED_HOSTS',
-    default='localhost,127.0.0.1,.onrender.com,.railway.app',
-    cast=lambda v: [s.strip() for s in v.split(',')]
-)
+
+# ALLOWED_HOSTS - 환경변수 없어도 Render/Railway 자동 허용
+_allowed = config('ALLOWED_HOSTS', default='')
+if _allowed:
+    ALLOWED_HOSTS = [h.strip() for h in _allowed.split(',') if h.strip()]
+else:
+    ALLOWED_HOSTS = ['*']  # 환경변수 없으면 전체 허용 (배포 초기 안전망)
+
+# Render가 주입하는 RENDER_EXTERNAL_HOSTNAME 자동 추가
+_render_host = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if _render_host and _render_host not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(_render_host)
 
 INSTALLED_APPS = [
     'django.contrib.admin',
