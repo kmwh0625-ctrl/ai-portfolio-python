@@ -611,7 +611,7 @@
       {% if all_projects %}
         {% for project in all_projects %}
         <div class="project-card">
-          <div class="project-thumb" style="background: linear-gradient(135deg, {% cycle '#1a2340' '#005a4b' '#2d3a6a' '#1a3a30' %} 0%, {% cycle '#2d3a6a' '#00836d' '#3d4f8a' '#2a5040' %} 100%);">
+          <div class="project-thumb" style="background: linear-gradient(135deg, #1a2340 0%, #00836d 100%);">
             <span style="font-size:52px;z-index:1;position:relative">
               {% if project.category == 'ai' %}🤖{% elif project.category == 'web' %}🌐{% elif project.category == 'data' %}📊{% else %}💡{% endif %}
             </span>
@@ -643,8 +643,7 @@
         </div>
         {% endfor %}
       {% else %}
-        <!-- Default sample projects when DB is empty -->
-        {% for proj in "1,2,3"|split:"," %}
+        <!-- 기본 샘플 프로젝트 (DB 비어있을 때) -->
         <div class="project-card">
           <div class="project-thumb" style="background:linear-gradient(135deg,#1a2340 0%,#00836d 100%)">
             <span style="font-size:52px;z-index:1;position:relative">🤖</span>
@@ -655,19 +654,52 @@
             <div class="project-subtitle">MobileNetV2 기반 실시간 분류기</div>
             <div class="project-desc">TensorFlow와 MobileNetV2를 활용한 실시간 이미지 분류 웹 애플리케이션. ImageNet 1000 클래스 지원.</div>
             <div class="project-tags">
-              <span class="tag">Python</span>
-              <span class="tag">TensorFlow</span>
-              <span class="tag">Django</span>
-              <span class="tag">MobileNet</span>
+              <span class="tag">Python</span><span class="tag">TensorFlow</span>
+              <span class="tag">Django</span><span class="tag">MobileNet</span>
             </div>
             <div class="project-links">
               <a href="/ai/image/" class="btn btn-primary" style="font-size:13px;padding:8px 14px"><i class="fas fa-play"></i> 데모 보기</a>
             </div>
           </div>
         </div>
-        {% endfor %}
+        <div class="project-card">
+          <div class="project-thumb" style="background:linear-gradient(135deg,#1a3a30 0%,#005a4b 100%)">
+            <span style="font-size:52px;z-index:1;position:relative">💬</span>
+            <span class="project-category-badge">AI / ML</span>
+          </div>
+          <div class="project-body">
+            <div class="project-title">텍스트 감성 분석</div>
+            <div class="project-subtitle">HuggingFace BERT 기반 감성 분류기</div>
+            <div class="project-desc">한국어 텍스트의 긍정/부정/중립 감정을 BERT 모델로 분석하는 웹 서비스. 키워드 기반 폴백 포함.</div>
+            <div class="project-tags">
+              <span class="tag">Python</span><span class="tag">HuggingFace</span>
+              <span class="tag">Django</span><span class="tag">BERT</span>
+            </div>
+            <div class="project-links">
+              <a href="/ai/sentiment/" class="btn btn-primary" style="font-size:13px;padding:8px 14px"><i class="fas fa-play"></i> 데모 보기</a>
+            </div>
+          </div>
+        </div>
+        <div class="project-card">
+          <div class="project-thumb" style="background:linear-gradient(135deg,#2d1a40 0%,#4a2d6a 100%)">
+            <span style="font-size:52px;z-index:1;position:relative">🤖</span>
+            <span class="project-category-badge">AI / ML</span>
+          </div>
+          <div class="project-body">
+            <div class="project-title">AI 포트폴리오 웹사이트</div>
+            <div class="project-subtitle">Django + AI 풀스택 포트폴리오</div>
+            <div class="project-desc">AI 데모(이미지 분류, 감성 분석, 요약, 챗봇)를 포함한 개인 포트폴리오. Render 클라우드 배포.</div>
+            <div class="project-tags">
+              <span class="tag">Django</span><span class="tag">Python</span>
+              <span class="tag">Render</span><span class="tag">GitHub</span>
+            </div>
+            <div class="project-links">
+              <a href="/" class="btn btn-primary" style="font-size:13px;padding:8px 14px"><i class="fas fa-external-link-alt"></i> 지금 보는 사이트</a>
+            </div>
+          </div>
+        </div>
         <p style="color:var(--gray-500);font-size:13px;grid-column:1/-1;text-align:center;padding:8px 0">
-          💡 Admin 페이지에서 프로젝트를 추가하면 이 목록에 표시됩니다.
+          💡 <a href="/admin/" style="color:var(--green)">Admin 페이지</a>에서 프로젝트를 추가하면 이 목록에 표시됩니다.
         </p>
       {% endif %}
     </div>
@@ -740,34 +772,28 @@
       {% endfor %}
     </div>
     {% else %}
-    <!-- Default skills when DB empty -->
+    <!-- 기본 스킬 (DB 비어있을 때) -->
     <div class="skills-grid">
       <div class="skill-group">
         <div class="skill-group-title">AI / ML</div>
-        {% for item in "TensorFlow,PyTorch,HuggingFace,Scikit-learn,NumPy"|split:"," %}
-        <div class="skill-row">
-          <div class="skill-meta"><span class="skill-name">{{ item }}</span><span class="skill-pct">80%</span></div>
-          <div class="skill-track"><div class="skill-fill" data-pct="80"></div></div>
-        </div>
-        {% endfor %}
+        <div class="skill-row"><div class="skill-meta"><span class="skill-name">TensorFlow</span><span class="skill-pct">80%</span></div><div class="skill-track"><div class="skill-fill" data-pct="80"></div></div></div>
+        <div class="skill-row"><div class="skill-meta"><span class="skill-name">HuggingFace</span><span class="skill-pct">75%</span></div><div class="skill-track"><div class="skill-fill" data-pct="75"></div></div></div>
+        <div class="skill-row"><div class="skill-meta"><span class="skill-name">Pandas / NumPy</span><span class="skill-pct">78%</span></div><div class="skill-track"><div class="skill-fill" data-pct="78"></div></div></div>
+        <div class="skill-row"><div class="skill-meta"><span class="skill-name">scikit-learn</span><span class="skill-pct">70%</span></div><div class="skill-track"><div class="skill-fill" data-pct="70"></div></div></div>
       </div>
       <div class="skill-group">
         <div class="skill-group-title">Backend</div>
-        {% for item in "Python,Django,FastAPI,SQLite,PostgreSQL"|split:"," %}
-        <div class="skill-row">
-          <div class="skill-meta"><span class="skill-name">{{ item }}</span><span class="skill-pct">85%</span></div>
-          <div class="skill-track"><div class="skill-fill" data-pct="85"></div></div>
-        </div>
-        {% endfor %}
+        <div class="skill-row"><div class="skill-meta"><span class="skill-name">Python</span><span class="skill-pct">85%</span></div><div class="skill-track"><div class="skill-fill" data-pct="85"></div></div></div>
+        <div class="skill-row"><div class="skill-meta"><span class="skill-name">Django</span><span class="skill-pct">80%</span></div><div class="skill-track"><div class="skill-fill" data-pct="80"></div></div></div>
+        <div class="skill-row"><div class="skill-meta"><span class="skill-name">PostgreSQL</span><span class="skill-pct">65%</span></div><div class="skill-track"><div class="skill-fill" data-pct="65"></div></div></div>
+        <div class="skill-row"><div class="skill-meta"><span class="skill-name">SQLite</span><span class="skill-pct">75%</span></div><div class="skill-track"><div class="skill-fill" data-pct="75"></div></div></div>
       </div>
       <div class="skill-group">
-        <div class="skill-group-title">Frontend</div>
-        {% for item in "JavaScript,HTML/CSS,React,Tailwind CSS"|split:"," %}
-        <div class="skill-row">
-          <div class="skill-meta"><span class="skill-name">{{ item }}</span><span class="skill-pct">70%</span></div>
-          <div class="skill-track"><div class="skill-fill" data-pct="70"></div></div>
-        </div>
-        {% endfor %}
+        <div class="skill-group-title">Frontend / DevOps</div>
+        <div class="skill-row"><div class="skill-meta"><span class="skill-name">JavaScript</span><span class="skill-pct">65%</span></div><div class="skill-track"><div class="skill-fill" data-pct="65"></div></div></div>
+        <div class="skill-row"><div class="skill-meta"><span class="skill-name">HTML / CSS</span><span class="skill-pct">75%</span></div><div class="skill-track"><div class="skill-fill" data-pct="75"></div></div></div>
+        <div class="skill-row"><div class="skill-meta"><span class="skill-name">Git / GitHub</span><span class="skill-pct">80%</span></div><div class="skill-track"><div class="skill-fill" data-pct="80"></div></div></div>
+        <div class="skill-row"><div class="skill-meta"><span class="skill-name">Render / Railway</span><span class="skill-pct">70%</span></div><div class="skill-track"><div class="skill-fill" data-pct="70"></div></div></div>
       </div>
     </div>
     <p style="color:var(--gray-500);font-size:13px;text-align:center;margin-top:16px">
