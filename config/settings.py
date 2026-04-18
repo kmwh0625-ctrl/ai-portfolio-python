@@ -2,26 +2,22 @@
 Django settings - 로컬 / Railway / Render 모두 지원
 """
 from pathlib import Path
-from decouple import config
-import dj_database_url
 import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = config('SECRET_KEY', default='django-insecure-local-dev-only')
-DEBUG = config('DEBUG', default=True, cast=bool)
+# python-decouple 없어도 되도록 os.environ 직접 사용
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-local-dev-only-change-in-prod')
 
-# ALLOWED_HOSTS - 환경변수 없어도 Render/Railway 자동 허용
-_allowed = config('ALLOWED_HOSTS', default='')
-if _allowed:
-    ALLOWED_HOSTS = [h.strip() for h in _allowed.split(',') if h.strip()]
-else:
-    ALLOWED_HOSTS = ['*']  # 환경변수 없으면 전체 허용 (배포 초기 안전망)
+# 임시로 True - 500 원인 파악 후 False로 되돌림
+DEBUG = True
 
-# Render가 주입하는 RENDER_EXTERNAL_HOSTNAME 자동 추가
+ALLOWED_HOSTS = ['*']  # 일단 전체 허용
+
+# Render 자동 감지
 _render_host = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
-if _render_host and _render_host not in ALLOWED_HOSTS:
-    ALLOWED_HOSTS.append(_render_host)
+if _render_host:
+    ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -66,9 +62,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-DATABASE_URL = config('DATABASE_URL', default=None)
-if DATABASE_URL:
-    DATABASES = {'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)}
+# DATABASE_URL 있으면 PostgreSQL, 없으면 SQLite
+_db_url = os.environ.get('DATABASE_URL')
+if _db_url:
+    import dj_database_url
+    DATABASES = {'default': dj_database_url.parse(_db_url, conn_max_age=600)}
 else:
     DATABASES = {
         'default': {
@@ -101,7 +99,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
 
-# Railway + Render CSRF 모두 허용
 CSRF_TRUSTED_ORIGINS = [
     'https://*.onrender.com',
     'https://*.railway.app',
