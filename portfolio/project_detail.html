@@ -1,0 +1,265 @@
+{% extends "base.html" %}
+{% block title %}{{ project.title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+  .detail-hero {
+    background: linear-gradient(135deg, var(--navy) 0%, #2d3a6a 100%);
+    color: white;
+    padding: 60px 24px 80px;
+  }
+  .detail-hero-inner {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: rgba(255,255,255,.6);
+    text-decoration: none;
+    font-size: 14px;
+    margin-bottom: 28px;
+    transition: var(--transition);
+  }
+  .back-link:hover { color: var(--accent); }
+
+  .detail-category-badge {
+    display: inline-block;
+    background: rgba(0,201,167,.15);
+    border: 1px solid rgba(0,201,167,.3);
+    color: var(--accent);
+    padding: 4px 14px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .detail-title {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 4vw, 48px);
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 12px;
+  }
+
+  .detail-subtitle {
+    font-size: 18px;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
+
+  .detail-links {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 28px;
+  }
+
+  .detail-body {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 60px 24px;
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 40px;
+    align-items: start;
+  }
+
+  .detail-main h2 {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .detail-desc {
+    font-size: 16px;
+    line-height: 1.9;
+    color: var(--gray-700);
+    white-space: pre-line;
+  }
+
+  .detail-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .side-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--gray-200);
+    padding: 24px;
+  }
+
+  .side-card-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--gray-500);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin-bottom: 14px;
+  }
+
+  .tech-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .tech-tag {
+    background: var(--green-light);
+    color: var(--green-dark);
+    padding: 5px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: var(--font-mono);
+  }
+
+  .related-section {
+    background: var(--gray-100);
+    padding: 60px 24px;
+  }
+
+  .related-inner {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .related-title {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+  }
+
+  .related-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+  }
+
+  .related-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--gray-200);
+    padding: 24px;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: var(--transition);
+  }
+
+  .related-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-3px);
+    border-color: var(--green);
+  }
+
+  .related-card-title { font-size: 16px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+  .related-card-sub { font-size: 13px; color: var(--green); font-weight: 600; margin-bottom: 10px; }
+  .related-card-desc { font-size: 13px; color: var(--gray-500); line-height: 1.6; }
+
+  @media (max-width: 768px) {
+    .detail-body { grid-template-columns: 1fr; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="detail-hero">
+  <div class="detail-hero-inner">
+    <a href="/#projects" class="back-link">
+      <i class="fas fa-arrow-left"></i> 프로젝트 목록으로
+    </a>
+    <div class="detail-category-badge">{{ project.get_category_display }}</div>
+    <h1 class="detail-title">{{ project.title }}</h1>
+    {% if project.subtitle %}
+    <div class="detail-subtitle">{{ project.subtitle }}</div>
+    {% endif %}
+    <div class="detail-links">
+      {% if project.github_url %}
+      <a href="{{ project.github_url }}" target="_blank" class="btn btn-ghost" style="background:rgba(255,255,255,.1);color:white;border-color:rgba(255,255,255,.2)">
+        <i class="fab fa-github"></i> GitHub 보기
+      </a>
+      {% endif %}
+      {% if project.demo_url %}
+      <a href="{{ project.demo_url }}" target="_blank" class="btn" style="background:var(--accent);color:var(--navy);font-weight:700">
+        <i class="fas fa-external-link-alt"></i> 라이브 데모
+      </a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="detail-body">
+  <div class="detail-main">
+    <h2>프로젝트 소개</h2>
+    <div class="detail-desc">{{ project.description }}</div>
+  </div>
+
+  <div class="detail-sidebar">
+    <div class="side-card">
+      <div class="side-card-title">기술 스택</div>
+      <div class="tech-tags">
+        {% for tech in project.get_tech_list %}
+        <span class="tech-tag">{{ tech }}</span>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="side-card">
+      <div class="side-card-title">카테고리</div>
+      <div style="font-size:14px;font-weight:600;color:var(--navy)">
+        {% if project.category == 'ai' %}🤖{% elif project.category == 'web' %}🌐{% elif project.category == 'data' %}📊{% else %}💡{% endif %}
+        {{ project.get_category_display }}
+      </div>
+    </div>
+
+    {% if project.github_url or project.demo_url %}
+    <div class="side-card">
+      <div class="side-card-title">링크</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        {% if project.github_url %}
+        <a href="{{ project.github_url }}" target="_blank" class="btn btn-ghost" style="font-size:13px;padding:8px 14px;justify-content:center">
+          <i class="fab fa-github"></i> GitHub
+        </a>
+        {% endif %}
+        {% if project.demo_url %}
+        <a href="{{ project.demo_url }}" target="_blank" class="btn btn-primary" style="font-size:13px;padding:8px 14px;justify-content:center">
+          <i class="fas fa-play"></i> 데모 보기
+        </a>
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% if related %}
+<div class="related-section">
+  <div class="related-inner">
+    <div class="related-title">관련 프로젝트</div>
+    <div class="related-grid">
+      {% for rel in related %}
+      <a href="/project/{{ rel.pk }}/" class="related-card">
+        <div class="related-card-title">{{ rel.title }}</div>
+        {% if rel.subtitle %}<div class="related-card-sub">{{ rel.subtitle }}</div>{% endif %}
+        <div class="related-card-desc">{{ rel.description|truncatewords:20 }}</div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}
