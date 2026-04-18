@@ -1,0 +1,190 @@
+[
+  {
+    "model": "portfolio.project",
+    "pk": 1,
+    "fields": {
+      "title": "AI 포트폴리오 웹사이트",
+      "subtitle": "Django + TensorFlow 풀스택 프로젝트",
+      "description": "Django 백엔드와 TensorFlow AI 모델을 결합한 개인 포트폴리오 웹사이트. MobileNetV2 이미지 분류, HuggingFace 감성 분석, 텍스트 요약 기능을 실제 서비스로 구현했습니다. Render 클라우드에 배포 운영 중입니다.",
+      "category": "ai",
+      "tech_stack": "Python, Django, TensorFlow, HuggingFace, PostgreSQL, Render, GitHub",
+      "github_url": "https://github.com/kmwh0625-ctrl/ai-portfolio-python",
+      "demo_url": "https://ai-portfolio-51tv.onrender.com",
+      "image": "",
+      "is_featured": true,
+      "order": 1,
+      "created_at": "2026-04-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "portfolio.project",
+    "pk": 2,
+    "fields": {
+      "title": "한국 주식 데이터 분석 대시보드",
+      "subtitle": "KOSPI 종목 시각화 및 트렌드 분석",
+      "description": "Python pandas와 matplotlib을 활용해 KOSPI 상장 종목의 주가 데이터를 수집하고 시각화한 분석 대시보드. 이동평균선, 거래량 분석, 섹터별 수익률 비교 기능을 구현했습니다. yfinance API로 실시간 데이터를 수집합니다.",
+      "category": "data",
+      "tech_stack": "Python, Pandas, Matplotlib, Plotly, yfinance, Jupyter Notebook",
+      "github_url": "",
+      "demo_url": "",
+      "image": "",
+      "is_featured": true,
+      "order": 2,
+      "created_at": "2026-03-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "portfolio.project",
+    "pk": 3,
+    "fields": {
+      "title": "뉴스 자동 수집 및 요약 봇",
+      "subtitle": "BeautifulSoup + AI 요약 자동화 시스템",
+      "description": "BeautifulSoup과 Selenium으로 주요 언론사 뉴스를 자동 크롤링하고, AI 모델로 핵심 내용을 요약하는 자동화 시스템. 매일 오전 9시 스케줄러가 동작해 분야별 뉴스를 수집하고 정리합니다.",
+      "category": "web",
+      "tech_stack": "Python, BeautifulSoup, Selenium, Schedule, SQLite, Django",
+      "github_url": "",
+      "demo_url": "",
+      "image": "",
+      "is_featured": true,
+      "order": 3,
+      "created_at": "2026-02-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "portfolio.project",
+    "pk": 4,
+    "fields": {
+      "title": "취업 정보 챗봇",
+      "subtitle": "GPT 기반 취업 Q&A 대화형 AI",
+      "description": "취업 준비생을 위한 대화형 AI 챗봇. 이력서 작성 팁, 면접 질문 연습, 직무별 필요 기술 등을 질문하면 AI가 맞춤형 답변을 제공합니다. OpenAI API와 Django를 연동해 웹 서비스로 구현했습니다.",
+      "category": "ai",
+      "tech_stack": "Python, Django, OpenAI API, JavaScript, HTML/CSS",
+      "github_url": "",
+      "demo_url": "",
+      "image": "",
+      "is_featured": false,
+      "order": 4,
+      "created_at": "2026-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "portfolio.skill",
+    "pk": 1,
+    "fields": {
+      "name": "Python",
+      "proficiency": 85,
+      "category": "Language",
+      "order": 1
+    }
+  },
+  {
+    "model": "portfolio.skill",
+    "pk": 2,
+    "fields": {
+      "name": "JavaScript",
+      "proficiency": 65,
+      "category": "Language",
+      "order": 2
+    }
+  },
+  {
+    "model": "portfolio.skill",
+    "pk": 3,
+    "fields": {
+      "name": "HTML / CSS",
+      "proficiency": 75,
+      "category": "Language",
+      "order": 3
+    }
+  },
+  {
+    "model": "portfolio.skill",
+    "pk": 4,
+    "fields": {
+      "name": "Django",
+      "proficiency": 80,
+      "category": "Backend",
+      "order": 1
+    }
+  },
+  {
+    "model": "portfolio.skill",
+    "pk": 5,
+    "fields": {
+      "name": "PostgreSQL",
+      "proficiency": 65,
+      "category": "Backend",
+      "order": 2
+    }
+  },
+  {
+    "model": "portfolio.skill",
+    "pk": 6,
+    "fields": {
+      "name": "SQLite",
+      "proficiency": 75,
+      "category": "Backend",
+      "order": 3
+    }
+  },
+  {
+    "model": "portfolio.skill",
+    "pk": 7,
+    "fields": {
+      "name": "TensorFlow",
+      "proficiency": 70,
+      "category": "AI / ML",
+      "order": 1
+    }
+  },
+  {
+    "model": "portfolio.skill",
+    "pk": 8,
+    "fields": {
+      "name": "HuggingFace",
+      "proficiency": 65,
+      "category": "AI / ML",
+      "order": 2
+    }
+  },
+  {
+    "model": "portfolio.skill",
+    "pk": 9,
+    "fields": {
+      "name": "Pandas / NumPy",
+      "proficiency": 75,
+      "category": "AI / ML",
+      "order": 3
+    }
+  },
+  {
+    "model": "portfolio.skill",
+    "pk": 10,
+    "fields": {
+      "name": "Git / GitHub",
+      "proficiency": 80,
+      "category": "DevOps",
+      "order": 1
+    }
+  },
+  {
+    "model": "portfolio.skill",
+    "pk": 11,
+    "fields": {
+      "name": "Render / Railway",
+      "proficiency": 70,
+      "category": "DevOps",
+      "order": 2
+    }
+  },
+  {
+    "model": "portfolio.skill",
+    "pk": 12,
+    "fields": {
+      "name": "BeautifulSoup / Selenium",
+      "proficiency": 70,
+      "category": "DevOps",
+      "order": 3
+    }
+  }
+]

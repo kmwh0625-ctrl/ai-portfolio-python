@@ -390,31 +390,16 @@
     overflow: hidden;
   }
 
-  /* .skill-fill {
+  .skill-fill {
     height: 100%;
     border-radius: 3px;
     background: linear-gradient(90deg, var(--green), var(--accent));
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 1.2s cubic-bezier(.4,0,.2,1);
-  } */
+  }
 
-  .skill-fill {
-    height: 100%;
-    border-radius: 3px;
-    background: linear-gradient(90deg, var(--green), var(--accent));
-    
-    /* 애니메이션 방식 변경: transform 대신 width 사용 */
-    width: 0; 
-    display: block !important; /* 무조건 보이게 강제 */
-    transition: width 1.2s cubic-bezier(.4, 0, .2, 1);
-}
-
-/* 아래 클래스는 이제 필요 없지만, 혹시 JS가 실행될 때를 대비해 width를 유지해줍니다 */
-.skill-fill.animated {
-    /* 이미 HTML style="width: 70%" 등이 적용되어 있다면 이 클래스는 무시됩니다 */
-}
-  /* .skill-fill.animated { transform: scaleX(1); } */
+  .skill-fill.animated { transform: scaleX(1); }
 
   /* default skill groups when DB empty */
   .skills-default-grid {
@@ -441,7 +426,7 @@
 
   .demo-cards {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 24px;
   }
 
@@ -511,9 +496,9 @@
 <section class="hero">
   <div class="hero-inner">
     <div class="hero-text">
-      <div class="hero-eyebrow"><span></span>신입 PYTHON & AI 개발자 김원형 포트폴리오</div>
+      <div class="hero-eyebrow"><span></span>신입 AI 개발자 포트폴리오</div>
       <h1 class="hero-title">
-        신입 python개발자가 AI로 만드는<br>
+        AI로 만드는<br>
         <span class="highlight">미래의 솔루션</span>
       </h1>
       <p class="hero-desc">
@@ -621,12 +606,12 @@
       <h2 class="section-title">프로젝트 포트폴리오</h2>
       <p class="section-subtitle">실제로 구현하고 배포한 프로젝트들입니다.</p>
     </div>
-<!-- 아무거나 -->
+
     <div class="projects-grid">
       {% if all_projects %}
         {% for project in all_projects %}
         <div class="project-card">
-       <div class="project-thumb" style="background: linear-gradient(135deg, {% cycle '#1a2340' '#005a4b' '#2d3a6a' '#1a3a30' %} 0%, {% cycle '#2d3a6a' '#00836d' '#3d4f8a' '#2a5040' %} 100%);">
+          <div class="project-thumb" style="background: linear-gradient(135deg, {% cycle '#1a2340' '#005a4b' '#2d3a6a' '#1a3a30' %} 0%, {% cycle '#2d3a6a' '#00836d' '#3d4f8a' '#2a5040' %} 100%);">
             <span style="font-size:52px;z-index:1;position:relative">
               {% if project.category == 'ai' %}🤖{% elif project.category == 'web' %}🌐{% elif project.category == 'data' %}📊{% else %}💡{% endif %}
             </span>
@@ -659,7 +644,7 @@
         {% endfor %}
       {% else %}
         <!-- Default sample projects when DB is empty -->
-        {% for i in "123" %}
+        {% for proj in "1,2,3"|split:"," %}
         <div class="project-card">
           <div class="project-thumb" style="background:linear-gradient(135deg,#1a2340 0%,#00836d 100%)">
             <span style="font-size:52px;z-index:1;position:relative">🤖</span>
@@ -701,19 +686,25 @@
       <a href="/ai/image/" class="demo-card">
         <div class="demo-card-icon"><i class="fas fa-camera"></i></div>
         <div class="demo-card-title">이미지 분류</div>
-        <div class="demo-card-desc">
-          TensorFlow의 MobileNetV2 모델을 활용해 업로드한 이미지를 1000가지 카테고리로 분류합니다.
-          실시간으로 상위 5개 예측 결과와 확률을 확인할 수 있습니다.
-        </div>
+        <div class="demo-card-desc">TensorFlow MobileNetV2로 업로드한 이미지를 1000가지 카테고리로 분류합니다. 상위 5개 예측 결과와 확률을 실시간으로 확인할 수 있습니다.</div>
         <span class="demo-card-link">데모 체험하기 <i class="fas fa-arrow-right"></i></span>
       </a>
       <a href="/ai/sentiment/" class="demo-card">
         <div class="demo-card-icon"><i class="fas fa-smile"></i></div>
         <div class="demo-card-title">감성 분석</div>
-        <div class="demo-card-desc">
-          HuggingFace Transformers 기반의 한국어 감성 분석 모델로 텍스트의 긍정/부정/중립 감정을
-          분석하고 확률과 함께 시각화합니다.
-        </div>
+        <div class="demo-card-desc">HuggingFace BERT 기반 한국어 감성 분석 모델로 텍스트의 긍정/부정/중립 감정을 분석하고 확률과 함께 시각화합니다.</div>
+        <span class="demo-card-link">데모 체험하기 <i class="fas fa-arrow-right"></i></span>
+      </a>
+      <a href="/ai/summarize/" class="demo-card">
+        <div class="demo-card-icon"><i class="fas fa-compress-alt"></i></div>
+        <div class="demo-card-title">텍스트 요약</div>
+        <div class="demo-card-desc">긴 글을 AI가 핵심 내용만 짧게 요약해드립니다. 뉴스 기사, 보고서, 논문 등 다양한 텍스트를 입력해보세요.</div>
+        <span class="demo-card-link">데모 체험하기 <i class="fas fa-arrow-right"></i></span>
+      </a>
+      <a href="/ai/chatbot/" class="demo-card">
+        <div class="demo-card-icon"><i class="fas fa-robot"></i></div>
+        <div class="demo-card-title">취업 AI 챗봇</div>
+        <div class="demo-card-desc">이력서 작성, 면접 준비, 개발 기술 등 취업과 개발에 관한 질문을 AI 챗봇에게 물어보세요!</div>
         <span class="demo-card-link">데모 체험하기 <i class="fas fa-arrow-right"></i></span>
       </a>
     </div>
@@ -729,43 +720,60 @@
       <p class="section-subtitle">개발에 활용하는 기술들입니다.</p>
     </div>
 
+    {% if skill_categories %}
+    <div class="skills-grid">
+      {% for category, skills in skill_categories.items %}
+      <div class="skill-group">
+        <div class="skill-group-title">{{ category }}</div>
+        {% for skill in skills %}
+        <div class="skill-row">
+          <div class="skill-meta">
+            <span class="skill-name">{{ skill.name }}</span>
+            <span class="skill-pct">{{ skill.proficiency }}%</span>
+          </div>
+          <div class="skill-track">
+            <div class="skill-fill" style="--pct:{{ skill.proficiency }}%" data-pct="{{ skill.proficiency }}"></div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <!-- Default skills when DB empty -->
     <div class="skills-grid">
       <div class="skill-group">
         <div class="skill-group-title">AI / ML</div>
+        {% for item in "TensorFlow,PyTorch,HuggingFace,Scikit-learn,NumPy"|split:"," %}
         <div class="skill-row">
-          <div class="skill-meta"><span class="skill-name">TensorFlow, PyTorch</span><span class="skill-pct">80%</span></div>
-          <div class="skill-track"><div class="skill-fill" style="width: 80%" data-pct="80"></div></div>
+          <div class="skill-meta"><span class="skill-name">{{ item }}</span><span class="skill-pct">80%</span></div>
+          <div class="skill-track"><div class="skill-fill" data-pct="80"></div></div>
         </div>
-        <div class="skill-row">
-          <div class="skill-meta"><span class="skill-name">HuggingFace, NumPy</span><span class="skill-pct">80%</span></div>
-          <div class="skill-track"><div class="skill-fill" style="width: 80%" data-pct="80"></div></div>
-        </div>
+        {% endfor %}
       </div>
-
       <div class="skill-group">
         <div class="skill-group-title">Backend</div>
+        {% for item in "Python,Django,FastAPI,SQLite,PostgreSQL"|split:"," %}
         <div class="skill-row">
-          <div class="skill-meta"><span class="skill-name">Python, Django</span><span class="skill-pct">85%</span></div>
-          <div class="skill-track"><div class="skill-fill" style="width: 85%" data-pct="85"></div></div>
+          <div class="skill-meta"><span class="skill-name">{{ item }}</span><span class="skill-pct">85%</span></div>
+          <div class="skill-track"><div class="skill-fill" data-pct="85"></div></div>
         </div>
-        <div class="skill-row">
-          <div class="skill-meta"><span class="skill-name">FastAPI, SQLite</span><span class="skill-pct">85%</span></div>
-          <div class="skill-track"><div class="skill-fill" style="width: 85%" data-pct="85"></div></div>
-        </div>
+        {% endfor %}
       </div>
-
       <div class="skill-group">
         <div class="skill-group-title">Frontend</div>
+        {% for item in "JavaScript,HTML/CSS,React,Tailwind CSS"|split:"," %}
         <div class="skill-row">
-          <div class="skill-meta"><span class="skill-name">JavaScript, HTML/CSS</span><span class="skill-pct">70%</span></div>
-          <div class="skill-track"><div class="skill-fill" style="width: 70%" data-pct="70"></div></div>
+          <div class="skill-meta"><span class="skill-name">{{ item }}</span><span class="skill-pct">70%</span></div>
+          <div class="skill-track"><div class="skill-fill" data-pct="70"></div></div>
         </div>
-        <div class="skill-row">
-          <div class="skill-meta"><span class="skill-name">React, Tailwind CSS</span><span class="skill-pct">70%</span></div>
-          <div class="skill-track"><div class="skill-fill" style="width: 70%" data-pct="70"></div></div>
-        </div>
+        {% endfor %}
       </div>
     </div>
+    <p style="color:var(--gray-500);font-size:13px;text-align:center;margin-top:16px">
+      💡 Admin에서 Skill 항목을 추가하면 여기에 표시됩니다.
+    </p>
+    {% endif %}
   </div>
 </section>
 
