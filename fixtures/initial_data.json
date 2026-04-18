@@ -186,5 +186,55 @@
       "category": "DevOps",
       "order": 3
     }
+  },
+  {
+    "model": "portfolio.skill",
+    "pk": 13,
+    "fields": {
+      "name": "Photoshop",
+      "proficiency": 75,
+      "category": "Design",
+      "order": 1
+    }
+  },
+  {
+    "model": "portfolio.skill",
+    "pk": 14,
+    "fields": {
+      "name": "Figma",
+      "proficiency": 80,
+      "category": "Design",
+      "order": 2
+    }
+  },
+  {
+    "model": "portfolio.skill",
+    "pk": 15,
+    "fields": {
+      "name": "Illustrator",
+      "proficiency": 70,
+      "category": "Design",
+      "order": 3
+    }
+  },
+  {
+    "model": "portfolio.skill",
+    "pk": 16,
+    "fields": {
+      "name": "After Effects",
+      "proficiency": 65,
+      "category": "Design",
+      "order": 4
+    }
+  },
+  {
+    "model": "portfolio.skill",
+    "pk": 17,
+    "fields": {
+      "name": "Premiere Pro",
+      "proficiency": 70,
+      "category": "Design",
+      "order": 5
+    }
   }
 ]

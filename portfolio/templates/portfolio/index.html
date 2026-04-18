@@ -796,6 +796,14 @@
         <div class="skill-row"><div class="skill-meta"><span class="skill-name">Git / GitHub</span><span class="skill-pct">80%</span></div><div class="skill-track"><div class="skill-fill" data-pct="80"></div></div></div>
         <div class="skill-row"><div class="skill-meta"><span class="skill-name">Render / Railway</span><span class="skill-pct">70%</span></div><div class="skill-track"><div class="skill-fill" data-pct="70"></div></div></div>
       </div>
+      <div class="skill-group">
+        <div class="skill-group-title">Design</div>
+        <div class="skill-row"><div class="skill-meta"><span class="skill-name">Photoshop</span><span class="skill-pct">75%</span></div><div class="skill-track"><div class="skill-fill" data-pct="75"></div></div></div>
+        <div class="skill-row"><div class="skill-meta"><span class="skill-name">Figma</span><span class="skill-pct">80%</span></div><div class="skill-track"><div class="skill-fill" data-pct="80"></div></div></div>
+        <div class="skill-row"><div class="skill-meta"><span class="skill-name">Illustrator</span><span class="skill-pct">70%</span></div><div class="skill-track"><div class="skill-fill" data-pct="70"></div></div></div>
+        <div class="skill-row"><div class="skill-meta"><span class="skill-name">After Effects</span><span class="skill-pct">65%</span></div><div class="skill-track"><div class="skill-fill" data-pct="65"></div></div></div>
+        <div class="skill-row"><div class="skill-meta"><span class="skill-name">Premiere Pro</span><span class="skill-pct">70%</span></div><div class="skill-track"><div class="skill-fill" data-pct="70"></div></div></div>
+      </div>
     </div>
     <p style="color:var(--gray-500);font-size:13px;text-align:center;margin-top:16px">
       💡 Admin에서 Skill 항목을 추가하면 여기에 표시됩니다.
@@ -808,18 +816,30 @@
 
 {% block extra_js %}
 <script>
-  // Animate skill bars on scroll
+  // 스킬바 애니메이션 - 페이지 로드 후 무조건 실행 + 스크롤 감지 병행
+  function animateSkillBars() {
+    document.querySelectorAll('.skill-fill').forEach(el => {
+      el.style.width = el.dataset.pct + '%';
+      el.classList.add('animated');
+    });
+  }
+
+  // 1. 페이지 완전 로드 후 500ms 딜레이로 실행 (항상 작동)
+  window.addEventListener('load', function() {
+    setTimeout(animateSkillBars, 500);
+  });
+
+  // 2. IntersectionObserver 병행 (스크롤해서 보일 때도 작동)
   const fills = document.querySelectorAll('.skill-fill');
   const observer = new IntersectionObserver(entries => {
     entries.forEach(e => {
       if (e.isIntersecting) {
-        const pct = e.target.dataset.pct;
-        e.target.style.width = pct + '%';
+        e.target.style.width = e.target.dataset.pct + '%';
         e.target.classList.add('animated');
         observer.unobserve(e.target);
       }
     });
-  }, { threshold: .3 });
+  }, { threshold: 0.1 });
   fills.forEach(f => observer.observe(f));
 </script>
 {% endblock %}

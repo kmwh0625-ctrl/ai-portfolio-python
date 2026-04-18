@@ -6,170 +6,159 @@
   .detail-hero {
     background: linear-gradient(135deg, var(--navy) 0%, #2d3a6a 100%);
     color: white;
-    padding: 60px 24px 80px;
+    padding: 56px 24px 64px;
   }
-  .detail-hero-inner {
-    max-width: 900px;
-    margin: 0 auto;
-  }
+  .detail-hero-inner { max-width: 960px; margin: 0 auto; }
+
   .back-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    color: rgba(255,255,255,.6);
-    text-decoration: none;
-    font-size: 14px;
-    margin-bottom: 28px;
-    transition: var(--transition);
+    display: inline-flex; align-items: center; gap: 8px;
+    color: rgba(255,255,255,.55); text-decoration: none;
+    font-size: 13px; margin-bottom: 28px; transition: var(--transition);
   }
   .back-link:hover { color: var(--accent); }
 
-  .detail-category-badge {
+  .detail-badge {
     display: inline-block;
-    background: rgba(0,201,167,.15);
-    border: 1px solid rgba(0,201,167,.3);
-    color: var(--accent);
-    padding: 4px 14px;
-    border-radius: 100px;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: .06em;
-    text-transform: uppercase;
-    margin-bottom: 16px;
+    background: rgba(0,201,167,.15); border: 1px solid rgba(0,201,167,.3);
+    color: var(--accent); padding: 4px 14px; border-radius: 100px;
+    font-size: 12px; font-weight: 700; letter-spacing: .06em;
+    text-transform: uppercase; margin-bottom: 18px;
   }
 
   .detail-title {
     font-family: var(--font-display);
-    font-size: clamp(28px, 4vw, 48px);
-    font-weight: 800;
-    line-height: 1.2;
-    margin-bottom: 12px;
+    font-size: clamp(28px, 4vw, 52px);
+    font-weight: 800; line-height: 1.15; margin-bottom: 12px;
   }
 
-  .detail-subtitle {
-    font-size: 18px;
-    color: var(--accent);
-    font-weight: 600;
-    margin-bottom: 20px;
-  }
+  .detail-subtitle { font-size: 18px; color: var(--accent); font-weight: 600; margin-bottom: 28px; }
 
-  .detail-links {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-top: 28px;
-  }
+  .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; }
 
-  .detail-body {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 60px 24px;
+  /* ── 본문 레이아웃 ── */
+  .detail-wrap {
+    max-width: 960px; margin: 0 auto;
+    padding: 56px 24px 80px;
     display: grid;
     grid-template-columns: 1fr 300px;
     gap: 40px;
     align-items: start;
   }
 
-  .detail-main h2 {
+  /* ── 섹션 공통 ── */
+  .section-block { margin-bottom: 48px; }
+  .section-block:last-child { margin-bottom: 0; }
+
+  .block-title {
     font-family: var(--font-display);
-    font-size: 22px;
-    font-weight: 800;
-    color: var(--navy);
-    margin-bottom: 16px;
+    font-size: 20px; font-weight: 800;
+    color: var(--navy); margin-bottom: 18px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .block-title::after {
+    content: ''; flex: 1; height: 2px;
+    background: var(--gray-200); border-radius: 1px;
   }
 
   .detail-desc {
-    font-size: 16px;
-    line-height: 1.9;
+    font-size: 15px; line-height: 1.95;
     color: var(--gray-700);
-    white-space: pre-line;
   }
 
-  .detail-sidebar {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+  /* ── 기능 리스트 ── */
+  .feature-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .feature-item {
+    display: flex; align-items: flex-start; gap: 12px;
+    background: var(--gray-100); border-radius: var(--radius);
+    padding: 14px 18px; font-size: 14px; color: var(--gray-700); line-height: 1.6;
   }
+  .feature-icon {
+    width: 28px; height: 28px; border-radius: 8px;
+    background: var(--green); color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; flex-shrink: 0; margin-top: 1px;
+  }
+
+  /* ── 개발 과정 타임라인 ── */
+  .timeline { display: flex; flex-direction: column; gap: 0; }
+  .timeline-item {
+    display: flex; gap: 16px; padding-bottom: 24px;
+    position: relative;
+  }
+  .timeline-item:last-child { padding-bottom: 0; }
+  .timeline-item:not(:last-child)::before {
+    content: ''; position: absolute;
+    left: 16px; top: 32px; bottom: 0;
+    width: 2px; background: var(--gray-200);
+  }
+  .timeline-dot {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--green); color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; flex-shrink: 0; z-index: 1;
+  }
+  .timeline-content { flex: 1; }
+  .timeline-step {
+    font-size: 12px; font-weight: 700; color: var(--green);
+    text-transform: uppercase; letter-spacing: .06em; margin-bottom: 4px;
+  }
+  .timeline-text {
+    font-size: 14px; color: var(--gray-700); line-height: 1.7;
+  }
+
+  /* ── 배운 점 카드 ── */
+  .learned-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .learned-card {
+    background: var(--green-light); border-radius: var(--radius);
+    padding: 16px; border-left: 3px solid var(--green);
+  }
+  .learned-card-title { font-size: 13px; font-weight: 700; color: var(--green-dark); margin-bottom: 6px; }
+  .learned-card-text { font-size: 13px; color: var(--gray-700); line-height: 1.6; }
+
+  /* ── 사이드바 ── */
+  .sidebar { display: flex; flex-direction: column; gap: 20px; }
 
   .side-card {
-    background: white;
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--gray-200);
-    padding: 24px;
+    background: white; border-radius: var(--radius-lg);
+    border: 1px solid var(--gray-200); padding: 22px;
   }
-
   .side-card-title {
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--gray-500);
-    text-transform: uppercase;
-    letter-spacing: .08em;
-    margin-bottom: 14px;
+    font-size: 11px; font-weight: 700; color: var(--gray-500);
+    text-transform: uppercase; letter-spacing: .08em; margin-bottom: 14px;
   }
-
-  .tech-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
+  .tech-tags { display: flex; flex-wrap: wrap; gap: 8px; }
   .tech-tag {
-    background: var(--green-light);
-    color: var(--green-dark);
-    padding: 5px 12px;
-    border-radius: 8px;
-    font-size: 12px;
-    font-weight: 600;
-    font-family: var(--font-mono);
+    background: var(--green-light); color: var(--green-dark);
+    padding: 5px 12px; border-radius: 8px;
+    font-size: 12px; font-weight: 600; font-family: var(--font-mono);
   }
 
-  .related-section {
-    background: var(--gray-100);
-    padding: 60px 24px;
-  }
+  .stat-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--gray-200); }
+  .stat-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .stat-label { font-size: 13px; color: var(--gray-500); }
+  .stat-value { font-size: 13px; font-weight: 700; color: var(--navy); }
 
-  .related-inner {
-    max-width: 900px;
-    margin: 0 auto;
-  }
-
+  /* ── 관련 프로젝트 ── */
+  .related-wrap { background: var(--gray-100); padding: 56px 24px; }
+  .related-inner { max-width: 960px; margin: 0 auto; }
   .related-title {
-    font-family: var(--font-display);
-    font-size: 24px;
-    font-weight: 800;
-    color: var(--navy);
-    margin-bottom: 24px;
+    font-family: var(--font-display); font-size: 24px;
+    font-weight: 800; color: var(--navy); margin-bottom: 24px;
   }
-
-  .related-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 20px;
-  }
-
+  .related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); gap: 20px; }
   .related-card {
-    background: white;
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--gray-200);
-    padding: 24px;
-    text-decoration: none;
-    color: inherit;
-    display: block;
-    transition: var(--transition);
+    background: white; border-radius: var(--radius-lg);
+    border: 1px solid var(--gray-200); padding: 24px;
+    text-decoration: none; color: inherit; display: block; transition: var(--transition);
   }
-
-  .related-card:hover {
-    box-shadow: var(--shadow-md);
-    transform: translateY(-3px);
-    border-color: var(--green);
-  }
-
-  .related-card-title { font-size: 16px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
-  .related-card-sub { font-size: 13px; color: var(--green); font-weight: 600; margin-bottom: 10px; }
+  .related-card:hover { box-shadow: var(--shadow-md); transform: translateY(-3px); border-color: var(--green); }
+  .related-card-title { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+  .related-card-sub { font-size: 12px; color: var(--green); font-weight: 600; margin-bottom: 8px; }
   .related-card-desc { font-size: 13px; color: var(--gray-500); line-height: 1.6; }
 
   @media (max-width: 768px) {
-    .detail-body { grid-template-columns: 1fr; }
+    .detail-wrap { grid-template-columns: 1fr; }
+    .learned-grid { grid-template-columns: 1fr; }
   }
 </style>
 {% endblock %}
@@ -178,22 +167,20 @@
 
 <div class="detail-hero">
   <div class="detail-hero-inner">
-    <a href="/#projects" class="back-link">
-      <i class="fas fa-arrow-left"></i> 프로젝트 목록으로
-    </a>
-    <div class="detail-category-badge">{{ project.get_category_display }}</div>
+    <a href="/#projects" class="back-link"><i class="fas fa-arrow-left"></i> 프로젝트 목록으로</a>
+    <div class="detail-badge">{{ project.get_category_display }}</div>
     <h1 class="detail-title">{{ project.title }}</h1>
-    {% if project.subtitle %}
-    <div class="detail-subtitle">{{ project.subtitle }}</div>
-    {% endif %}
-    <div class="detail-links">
+    {% if project.subtitle %}<div class="detail-subtitle">{{ project.subtitle }}</div>{% endif %}
+    <div class="hero-btns">
       {% if project.github_url %}
-      <a href="{{ project.github_url }}" target="_blank" class="btn btn-ghost" style="background:rgba(255,255,255,.1);color:white;border-color:rgba(255,255,255,.2)">
-        <i class="fab fa-github"></i> GitHub 보기
+      <a href="{{ project.github_url }}" target="_blank" class="btn"
+         style="background:rgba(255,255,255,.1);color:white;border:1px solid rgba(255,255,255,.25)">
+        <i class="fab fa-github"></i> GitHub
       </a>
       {% endif %}
       {% if project.demo_url %}
-      <a href="{{ project.demo_url }}" target="_blank" class="btn" style="background:var(--accent);color:var(--navy);font-weight:700">
+      <a href="{{ project.demo_url }}" target="_blank" class="btn"
+         style="background:var(--accent);color:var(--navy);font-weight:700">
         <i class="fas fa-external-link-alt"></i> 라이브 데모
       </a>
       {% endif %}
@@ -201,13 +188,157 @@
   </div>
 </div>
 
-<div class="detail-body">
-  <div class="detail-main">
-    <h2>프로젝트 소개</h2>
-    <div class="detail-desc">{{ project.description }}</div>
+<div class="detail-wrap">
+  <!-- ── 메인 컨텐츠 ── -->
+  <div>
+
+    <!-- 프로젝트 소개 -->
+    <div class="section-block">
+      <div class="block-title"><i class="fas fa-info-circle" style="color:var(--green)"></i> 프로젝트 소개</div>
+      <div class="detail-desc">{{ project.description }}</div>
+    </div>
+
+    <!-- 주요 기능 -->
+    <div class="section-block">
+      <div class="block-title"><i class="fas fa-star" style="color:var(--green)"></i> 주요 기능</div>
+      <ul class="feature-list">
+        {% if project.category == 'ai' %}
+          <li class="feature-item">
+            <div class="feature-icon"><i class="fas fa-robot"></i></div>
+            <div><strong>AI 모델 연동</strong> — 사전학습된 딥러닝 모델을 웹 서비스에 통합하여 실시간 추론 기능을 구현했습니다.</div>
+          </li>
+          <li class="feature-item">
+            <div class="feature-icon"><i class="fas fa-upload"></i></div>
+            <div><strong>사용자 인터페이스</strong> — 드래그 앤 드롭 파일 업로드와 비동기 API 통신으로 빠른 응답을 제공합니다.</div>
+          </li>
+          <li class="feature-item">
+            <div class="feature-icon"><i class="fas fa-chart-bar"></i></div>
+            <div><strong>결과 시각화</strong> — 예측 결과와 신뢰도를 직관적인 차트와 그래프로 시각화하여 표시합니다.</div>
+          </li>
+          <li class="feature-item">
+            <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+            <div><strong>오류 처리 & 폴백</strong> — AI 모델 오류 시에도 키워드 기반 폴백 로직으로 서비스가 중단되지 않습니다.</div>
+          </li>
+        {% elif project.category == 'data' %}
+          <li class="feature-item">
+            <div class="feature-icon"><i class="fas fa-database"></i></div>
+            <div><strong>데이터 수집</strong> — yfinance API를 통해 KOSPI 상장 종목의 실시간 주가 데이터를 자동 수집합니다.</div>
+          </li>
+          <li class="feature-item">
+            <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+            <div><strong>기술적 분석</strong> — 이동평균선(MA), 볼린저 밴드, RSI 등 주요 기술 지표를 계산하고 시각화합니다.</div>
+          </li>
+          <li class="feature-item">
+            <div class="feature-icon"><i class="fas fa-filter"></i></div>
+            <div><strong>섹터별 분석</strong> — IT, 금융, 제조 등 섹터별 수익률을 비교하는 대시보드를 구현했습니다.</div>
+          </li>
+          <li class="feature-item">
+            <div class="feature-icon"><i class="fas fa-file-export"></i></div>
+            <div><strong>리포트 출력</strong> — Jupyter Notebook으로 분석 과정과 인사이트를 문서화하여 공유할 수 있습니다.</div>
+          </li>
+        {% elif project.category == 'web' %}
+          <li class="feature-item">
+            <div class="feature-icon"><i class="fas fa-spider"></i></div>
+            <div><strong>자동 크롤링</strong> — BeautifulSoup과 Selenium으로 주요 언론사 뉴스를 매일 자동 수집합니다.</div>
+          </li>
+          <li class="feature-item">
+            <div class="feature-icon"><i class="fas fa-clock"></i></div>
+            <div><strong>스케줄러</strong> — Python schedule 라이브러리로 매일 오전 9시 자동 실행되는 배치 작업을 구현했습니다.</div>
+          </li>
+          <li class="feature-item">
+            <div class="feature-icon"><i class="fas fa-compress-alt"></i></div>
+            <div><strong>AI 요약</strong> — 수집된 뉴스를 AI 모델로 핵심 내용만 짧게 요약하여 빠르게 파악할 수 있습니다.</div>
+          </li>
+          <li class="feature-item">
+            <div class="feature-icon"><i class="fas fa-database"></i></div>
+            <div><strong>DB 저장 & 조회</strong> — 수집한 뉴스를 SQLite DB에 저장하고 Django 관리자 페이지에서 조회합니다.</div>
+          </li>
+        {% else %}
+          <li class="feature-item">
+            <div class="feature-icon"><i class="fas fa-code"></i></div>
+            <div><strong>핵심 기능 구현</strong> — 프로젝트의 주요 비즈니스 로직을 Python으로 구현했습니다.</div>
+          </li>
+          <li class="feature-item">
+            <div class="feature-icon"><i class="fas fa-database"></i></div>
+            <div><strong>데이터 관리</strong> — Django ORM을 활용해 데이터를 효율적으로 저장하고 조회합니다.</div>
+          </li>
+          <li class="feature-item">
+            <div class="feature-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+            <div><strong>클라우드 배포</strong> — Render 플랫폼에 배포하여 실제 운영 환경을 구축했습니다.</div>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+
+    <!-- 개발 과정 -->
+    <div class="section-block">
+      <div class="block-title"><i class="fas fa-code-branch" style="color:var(--green)"></i> 개발 과정</div>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-dot">1</div>
+          <div class="timeline-content">
+            <div class="timeline-step">기획 & 설계</div>
+            <div class="timeline-text">프로젝트 목표와 요구사항을 정의하고, 기술 스택을 선정했습니다. 데이터 흐름과 시스템 구조를 설계했습니다.</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot">2</div>
+          <div class="timeline-content">
+            <div class="timeline-step">개발 환경 구성</div>
+            <div class="timeline-text">Python 가상환경을 설정하고 Django 프로젝트를 초기화했습니다. 필요한 라이브러리를 설치하고 GitHub 저장소를 생성했습니다.</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot">3</div>
+          <div class="timeline-content">
+            <div class="timeline-step">핵심 기능 구현</div>
+            <div class="timeline-text">모델링, API 연동, 데이터 처리 등 핵심 기능을 단계적으로 구현했습니다. 테스트를 반복하며 버그를 수정했습니다.</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot">4</div>
+          <div class="timeline-content">
+            <div class="timeline-step">UI/UX 개선</div>
+            <div class="timeline-text">사용자 경험을 고려한 프론트엔드를 구현했습니다. 반응형 디자인과 비동기 처리로 사용성을 높였습니다.</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot">5</div>
+          <div class="timeline-content">
+            <div class="timeline-step">배포 & 운영</div>
+            <div class="timeline-text">Render 클라우드에 배포하고 GitHub Actions로 자동 배포 파이프라인을 구성했습니다.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 배운 점 -->
+    <div class="section-block">
+      <div class="block-title"><i class="fas fa-graduation-cap" style="color:var(--green)"></i> 배운 점 & 성장</div>
+      <div class="learned-grid">
+        <div class="learned-card">
+          <div class="learned-card-title">🔧 기술적 성장</div>
+          <div class="learned-card-text">실제 서비스 개발을 통해 개발 환경과 운영 환경의 차이를 경험했습니다. 환경변수 관리, 정적 파일 처리 등 배포 실무를 익혔습니다.</div>
+        </div>
+        <div class="learned-card">
+          <div class="learned-card-title">🐛 문제 해결 능력</div>
+          <div class="learned-card-text">오류 로그를 분석하고 원인을 파악하는 디버깅 능력을 키웠습니다. Stack Overflow와 공식 문서를 적극 활용하는 습관을 만들었습니다.</div>
+        </div>
+        <div class="learned-card">
+          <div class="learned-card-title">🤝 협업 & 버전관리</div>
+          <div class="learned-card-text">Git을 활용한 버전 관리와 커밋 메시지 작성 습관을 만들었습니다. 기능 단위 브랜치 전략을 적용해봤습니다.</div>
+        </div>
+        <div class="learned-card">
+          <div class="learned-card-title">📈 개선 방향</div>
+          <div class="learned-card-text">사용자 인증 기능과 더 다양한 AI 모델을 추가할 계획입니다. 성능 최적화와 테스트 코드 작성도 도전해볼 예정입니다.</div>
+        </div>
+      </div>
+    </div>
+
   </div>
 
-  <div class="detail-sidebar">
+  <!-- ── 사이드바 ── -->
+  <div class="sidebar">
     <div class="side-card">
       <div class="side-card-title">기술 스택</div>
       <div class="tech-tags">
@@ -218,10 +349,25 @@
     </div>
 
     <div class="side-card">
-      <div class="side-card-title">카테고리</div>
-      <div style="font-size:14px;font-weight:600;color:var(--navy)">
-        {% if project.category == 'ai' %}🤖{% elif project.category == 'web' %}🌐{% elif project.category == 'data' %}📊{% else %}💡{% endif %}
-        {{ project.get_category_display }}
+      <div class="side-card-title">프로젝트 정보</div>
+      <div class="stat-row">
+        <span class="stat-label">카테고리</span>
+        <span class="stat-value">
+          {% if project.category == 'ai' %}🤖{% elif project.category == 'web' %}🌐{% elif project.category == 'data' %}📊{% else %}💡{% endif %}
+          {{ project.get_category_display }}
+        </span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">개발 언어</span>
+        <span class="stat-value">Python 3.11</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">배포 환경</span>
+        <span class="stat-value">Render (Free)</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">상태</span>
+        <span class="stat-value" style="color:var(--green)">● 운영 중</span>
       </div>
     </div>
 
@@ -230,23 +376,39 @@
       <div class="side-card-title">링크</div>
       <div style="display:flex;flex-direction:column;gap:10px">
         {% if project.github_url %}
-        <a href="{{ project.github_url }}" target="_blank" class="btn btn-ghost" style="font-size:13px;padding:8px 14px;justify-content:center">
-          <i class="fab fa-github"></i> GitHub
+        <a href="{{ project.github_url }}" target="_blank" class="btn btn-ghost"
+           style="font-size:13px;padding:9px 14px;justify-content:center">
+          <i class="fab fa-github"></i> GitHub 코드 보기
         </a>
         {% endif %}
         {% if project.demo_url %}
-        <a href="{{ project.demo_url }}" target="_blank" class="btn btn-primary" style="font-size:13px;padding:8px 14px;justify-content:center">
-          <i class="fas fa-play"></i> 데모 보기
+        <a href="{{ project.demo_url }}" target="_blank" class="btn btn-primary"
+           style="font-size:13px;padding:9px 14px;justify-content:center">
+          <i class="fas fa-play"></i> 라이브 데모
         </a>
         {% endif %}
       </div>
     </div>
     {% endif %}
+
+    <div class="side-card" style="background:var(--navy);border-color:var(--navy)">
+      <div class="side-card-title" style="color:rgba(255,255,255,.5)">개발자 소개</div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+        <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--accent));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">👤</div>
+        <div>
+          <div style="color:white;font-weight:700;font-size:15px">김원형</div>
+          <div style="color:rgba(255,255,255,.5);font-size:12px">Python & AI 신입 개발자</div>
+        </div>
+      </div>
+      <a href="/contact/" class="btn btn-primary" style="width:100%;justify-content:center;font-size:13px;padding:9px">
+        <i class="fas fa-paper-plane"></i> 연락하기
+      </a>
+    </div>
   </div>
 </div>
 
 {% if related %}
-<div class="related-section">
+<div class="related-wrap">
   <div class="related-inner">
     <div class="related-title">관련 프로젝트</div>
     <div class="related-grid">
