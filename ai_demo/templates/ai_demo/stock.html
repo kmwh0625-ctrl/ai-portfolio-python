@@ -1,0 +1,258 @@
+{% extends "base.html" %}
+{% block title %}주식 차트 분석 데모{% endblock %}
+
+{% block extra_css %}
+<style>
+  .demo-hero {
+    background: linear-gradient(135deg, #1a2340 0%, #1a3a20 100%);
+    color: white; padding: 60px 24px; text-align: center;
+  }
+  .demo-hero-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(0,201,167,.15); border: 1px solid rgba(0,201,167,.3);
+    color: var(--accent); padding: 5px 14px; border-radius: 100px;
+    font-size: 12px; font-weight: 700; letter-spacing: .08em;
+    text-transform: uppercase; margin-bottom: 20px;
+  }
+  .demo-hero h1 { font-family: var(--font-display); font-size: clamp(28px,4vw,46px); font-weight: 800; margin-bottom: 14px; }
+  .demo-hero p { color: rgba(255,255,255,.7); font-size: 16px; }
+
+  .demo-wrap { max-width: 1000px; margin: 48px auto; padding: 0 24px; display: flex; flex-direction: column; gap: 24px; }
+
+  .panel { background: white; border-radius: var(--radius-lg); border: 1px solid var(--gray-200); overflow: hidden; }
+  .panel-header {
+    background: var(--gray-100); border-bottom: 1px solid var(--gray-200);
+    padding: 16px 24px; display: flex; align-items: center; gap: 10px;
+  }
+  .panel-header-icon { width: 34px; height: 34px; border-radius: 9px; background: var(--green); display: flex; align-items: center; justify-content: center; color: white; font-size: 14px; }
+  .panel-header-title { font-weight: 700; color: var(--navy); font-size: 15px; }
+  .panel-body { padding: 24px; }
+
+  /* 검색 영역 */
+  .search-row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .search-input {
+    flex: 1; min-width: 200px; border: 2px solid var(--gray-200);
+    border-radius: var(--radius); padding: 12px 16px;
+    font-family: var(--font-kr); font-size: 14px; color: var(--navy);
+    transition: var(--transition); outline: none; background: var(--gray-100);
+  }
+  .search-input:focus { border-color: var(--green); background: white; }
+
+  .period-btns { display: flex; gap: 8px; }
+  .period-btn {
+    padding: 10px 16px; border: 2px solid var(--gray-200);
+    border-radius: var(--radius); font-size: 13px; font-weight: 600;
+    cursor: pointer; color: var(--gray-700); background: white;
+    transition: var(--transition); font-family: var(--font-kr);
+  }
+  .period-btn.active, .period-btn:hover { border-color: var(--green); color: var(--green); background: var(--green-light); }
+
+  .search-btn {
+    padding: 12px 24px; background: var(--green); color: white;
+    border: none; border-radius: var(--radius); font-size: 14px; font-weight: 700;
+    cursor: pointer; transition: var(--transition); font-family: var(--font-kr);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .search-btn:hover { background: var(--green-dark); }
+  .search-btn:disabled { opacity: .6; cursor: not-allowed; }
+
+  .quick-tickers { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+  .ticker-btn {
+    background: var(--gray-100); border: 1px solid var(--gray-200);
+    border-radius: 8px; padding: 6px 12px; font-size: 12px; font-weight: 600;
+    cursor: pointer; color: var(--gray-700); transition: var(--transition); font-family: var(--font-kr);
+  }
+  .ticker-btn:hover { background: var(--green-light); border-color: var(--green); color: var(--green-dark); }
+
+  /* 통계 카드 */
+  .stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 24px; }
+  .stat-card { background: var(--gray-100); border-radius: var(--radius); padding: 16px; text-align: center; }
+  .stat-card-label { font-size: 11px; font-weight: 700; color: var(--gray-500); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; }
+  .stat-card-value { font-family: var(--font-display); font-size: 22px; font-weight: 800; color: var(--navy); }
+  .stat-card-value.up { color: #e53e3e; }
+  .stat-card-value.down { color: #3182ce; }
+
+  .chart-container { position: relative; height: 360px; }
+  .volume-container { position: relative; height: 120px; margin-top: 16px; }
+
+  .result-panel { display: none; }
+  .loading-bar { height: 4px; background: var(--gray-200); border-radius: 2px; overflow: hidden; margin-top: 16px; display: none; }
+  .loading-bar-fill { height: 100%; background: linear-gradient(90deg,var(--green),var(--accent),var(--green)); background-size: 200%; animation: shimmer 1.2s infinite; width: 100%; }
+  @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+  .demo-badge { background: #fef3c7; border: 1px solid #fcd34d; color: #92400e; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; margin-top: 12px; display: none; }
+
+  @media(max-width:600px){ .stats-grid{grid-template-columns:repeat(2,1fr);} .search-row{flex-direction:column;} }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="demo-hero">
+  <div class="demo-hero-tag"><i class="fas fa-chart-line"></i> AI Demo</div>
+  <h1>📈 한국 주식 차트 분석</h1>
+  <p>종목을 입력하면 실시간 주가 데이터와 이동평균선을 보여드려요</p>
+</div>
+
+<div class="demo-wrap">
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-header-icon"><i class="fas fa-search"></i></div>
+      <div class="panel-header-title">종목 검색</div>
+    </div>
+    <div class="panel-body">
+      <div class="search-row">
+        <input type="text" class="search-input" id="tickerInput" placeholder="종목코드 또는 이름 (예: 005930, 삼성전자)" />
+        <div class="period-btns">
+          <button class="period-btn active" data-period="1mo" onclick="setPeriod(this,'1mo')">1개월</button>
+          <button class="period-btn" data-period="3mo" onclick="setPeriod(this,'3mo')">3개월</button>
+          <button class="period-btn" data-period="1y" onclick="setPeriod(this,'1y')">1년</button>
+        </div>
+        <button class="search-btn" id="searchBtn" onclick="fetchStock()">
+          <i class="fas fa-chart-bar"></i> 조회
+        </button>
+      </div>
+      <div class="quick-tickers">
+        <span style="font-size:12px;color:var(--gray-500);font-weight:600;align-self:center">빠른 선택:</span>
+        <button class="ticker-btn" onclick="quickSearch('005930')">삼성전자</button>
+        <button class="ticker-btn" onclick="quickSearch('000660')">SK하이닉스</button>
+        <button class="ticker-btn" onclick="quickSearch('035720')">카카오</button>
+        <button class="ticker-btn" onclick="quickSearch('035420')">NAVER</button>
+        <button class="ticker-btn" onclick="quickSearch('005380')">현대차</button>
+        <button class="ticker-btn" onclick="quickSearch('AAPL')">Apple</button>
+        <button class="ticker-btn" onclick="quickSearch('TSLA')">Tesla</button>
+      </div>
+      <div class="loading-bar" id="loadingBar"><div class="loading-bar-fill"></div></div>
+    </div>
+  </div>
+
+  <div class="panel result-panel" id="resultPanel">
+    <div class="panel-header">
+      <div class="panel-header-icon"><i class="fas fa-chart-area"></i></div>
+      <div class="panel-header-title" id="stockName">-</div>
+    </div>
+    <div class="panel-body">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-card-label">현재가</div>
+          <div class="stat-card-value" id="currentPrice">-</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-label">전일 대비</div>
+          <div class="stat-card-value" id="changePrice">-</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-label">52주 최고</div>
+          <div class="stat-card-value" id="high52">-</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-label">52주 최저</div>
+          <div class="stat-card-value" id="low52">-</div>
+        </div>
+      </div>
+      <div class="chart-container">
+        <canvas id="priceChart"></canvas>
+      </div>
+      <div class="volume-container">
+        <canvas id="volumeChart"></canvas>
+      </div>
+      <div class="demo-badge" id="demoBadge">⚠️ yfinance 미설치 환경 — 데모 데이터로 시각화 중입니다.</div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+  let currentPeriod = '1mo';
+  let priceChart = null, volumeChart = null;
+
+  function setPeriod(btn, period) {
+    document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentPeriod = period;
+  }
+
+  function quickSearch(ticker) {
+    document.getElementById('tickerInput').value = ticker;
+    fetchStock();
+  }
+
+  async function fetchStock() {
+    const ticker = document.getElementById('tickerInput').value.trim() || '005930';
+    const btn = document.getElementById('searchBtn');
+    const bar = document.getElementById('loadingBar');
+    btn.disabled = true;
+    bar.style.display = 'block';
+    document.getElementById('resultPanel').style.display = 'none';
+
+    try {
+      const res = await fetch('/ai/api/stock/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+        body: JSON.stringify({ ticker, period: currentPeriod }),
+      });
+      const data = await res.json();
+      bar.style.display = 'none';
+
+      if (!data.success) { alert(data.error || '조회 실패'); btn.disabled = false; return; }
+
+      document.getElementById('resultPanel').style.display = 'block';
+      document.getElementById('stockName').textContent = data.name;
+
+      const fmt = v => v ? v.toLocaleString() : '-';
+      document.getElementById('currentPrice').textContent = fmt(data.current);
+      const changeEl = document.getElementById('changePrice');
+      const sign = data.change >= 0 ? '+' : '';
+      changeEl.textContent = `${sign}${fmt(data.change)} (${sign}${data.change_pct}%)`;
+      changeEl.className = 'stat-card-value ' + (data.change >= 0 ? 'up' : 'down');
+      document.getElementById('high52').textContent = fmt(data.high52);
+      document.getElementById('low52').textContent = fmt(data.low52);
+      document.getElementById('demoBadge').style.display = data.demo ? 'block' : 'none';
+
+      // 차트 그리기
+      if (priceChart) priceChart.destroy();
+      if (volumeChart) volumeChart.destroy();
+
+      priceChart = new Chart(document.getElementById('priceChart'), {
+        type: 'line',
+        data: {
+          labels: data.dates,
+          datasets: [
+            { label: '종가', data: data.closes, borderColor: '#00836d', backgroundColor: 'rgba(0,131,109,.08)', borderWidth: 2, pointRadius: 0, fill: true, tension: 0.3 },
+            { label: 'MA5', data: data.ma5, borderColor: '#00c9a7', borderWidth: 1.5, pointRadius: 0, fill: false, borderDash: [4,2] },
+            { label: 'MA20', data: data.ma20, borderColor: '#f6ad55', borderWidth: 1.5, pointRadius: 0, fill: false, borderDash: [4,2] },
+          ]
+        },
+        options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'top', labels: { font: { size: 12 } } } }, scales: { x: { ticks: { maxTicksLimit: 8, font: { size: 11 } }, grid: { display: false } }, y: { ticks: { font: { size: 11 }, callback: v => v.toLocaleString() }, grid: { color: '#f0f0f0' } } } }
+      });
+
+      volumeChart = new Chart(document.getElementById('volumeChart'), {
+        type: 'bar',
+        data: {
+          labels: data.dates,
+          datasets: [{ label: '거래량', data: data.volumes, backgroundColor: 'rgba(0,131,109,.3)', borderColor: 'rgba(0,131,109,.6)', borderWidth: 1 }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { ticks: { font: { size: 10 }, callback: v => (v/1000000).toFixed(1)+'M' }, grid: { color: '#f0f0f0' } } } }
+      });
+
+    } catch(e) {
+      bar.style.display = 'none';
+      alert('오류가 발생했습니다.');
+    }
+    btn.disabled = false;
+  }
+
+  function getCookie(name) {
+    let val = null;
+    document.cookie.split(';').forEach(c => {
+      c = c.trim();
+      if (c.startsWith(name + '=')) val = decodeURIComponent(c.slice(name.length + 1));
+    });
+    return val;
+  }
+
+  // 페이지 로드시 삼성전자 기본 조회
+  window.addEventListener('load', () => setTimeout(fetchStock, 300));
+</script>
+{% endblock %}

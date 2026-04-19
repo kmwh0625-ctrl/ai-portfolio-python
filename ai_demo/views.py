@@ -175,3 +175,199 @@ def chatbot_api(request):
         reply = f"'{message}'에 대해 답변드릴게요! 😊\n\n더 구체적으로 질문해주시면 더 잘 도와드릴 수 있어요.\n\n예시 질문:\n• '이력서 팁 알려줘'\n• '면접 준비 방법'\n• 'Django ORM이 뭔가요?'\n• '신입 포트폴리오 어떻게 만들어?'"
 
     return JsonResponse({'success': True, 'reply': reply, 'message': message})
+
+
+# ── 주식 차트 데모 ────────────────────────────────────────────────────────────
+
+def stock_demo(request):
+    return render(request, 'ai_demo/stock.html')
+
+
+@csrf_exempt
+def stock_api(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POST only'}, status=405)
+
+    try:
+        data = json.loads(request.body)
+        ticker = data.get('ticker', '005930').strip().upper()
+        period = data.get('period', '1mo')
+    except Exception:
+        ticker = '005930'
+        period = '1mo'
+
+    # 한국 주식 티커 매핑
+    kr_map = {
+        '삼성전자': '005930.KS', '카카오': '035720.KS', '네이버': '035420.KS',
+        'SK하이닉스': '000660.KS', 'LG에너지솔루션': '373220.KS', '현대차': '005380.KS',
+        'SAMSUNG': '005930.KS', 'KAKAO': '035720.KS', 'NAVER': '035420.KS',
+    }
+    if ticker in kr_map:
+        ticker = kr_map[ticker]
+    elif ticker.isdigit() and len(ticker) == 6:
+        ticker = ticker + '.KS'
+
+    try:
+        import yfinance as yf
+
+        stock = yf.Ticker(ticker)
+        hist = stock.history(period=period)
+
+        if hist.empty:
+            raise ValueError("데이터 없음")
+
+        info = stock.info
+        dates = [d.strftime('%Y-%m-%d') for d in hist.index]
+        closes = [round(float(p), 2) for p in hist['Close']]
+        volumes = [int(v) for v in hist['Volume']]
+
+        # 이동평균 계산
+        ma5, ma20 = [], []
+        for i in range(len(closes)):
+            ma5.append(round(sum(closes[max(0,i-4):i+1]) / min(5, i+1), 2))
+            ma20.append(round(sum(closes[max(0,i-19):i+1]) / min(20, i+1), 2))
+
+        change = closes[-1] - closes[-2] if len(closes) >= 2 else 0
+        change_pct = round(change / closes[-2] * 100, 2) if len(closes) >= 2 else 0
+
+        return JsonResponse({
+            'success': True,
+            'ticker': ticker,
+            'name': info.get('longName', info.get('shortName', ticker)),
+            'current': closes[-1],
+            'change': round(change, 2),
+            'change_pct': change_pct,
+            'high52': info.get('fiftyTwoWeekHigh'),
+            'low52': info.get('fiftyTwoWeekLow'),
+            'dates': dates,
+            'closes': closes,
+            'ma5': ma5,
+            'ma20': ma20,
+            'volumes': volumes,
+        })
+
+    except ImportError:
+        # yfinance 없을 때 데모 데이터
+        import random
+        base = 75000
+        dates, closes, volumes = [], [], []
+        days = 30 if period == '1mo' else (90 if period == '3mo' else 365)
+        for i in range(days):
+            from datetime import date, timedelta
+            d = date.today() - timedelta(days=days-i)
+            dates.append(d.strftime('%Y-%m-%d'))
+            base = base + random.randint(-2000, 2200)
+            closes.append(max(60000, base))
+            volumes.append(random.randint(8000000, 20000000))
+
+        ma5 = [round(sum(closes[max(0,i-4):i+1])/min(5,i+1),2) for i in range(len(closes))]
+        ma20 = [round(sum(closes[max(0,i-19):i+1])/min(20,i+1),2) for i in range(len(closes))]
+        change = closes[-1] - closes[-2]
+
+        return JsonResponse({
+            'success': True, 'demo': True,
+            'ticker': '005930.KS', 'name': '삼성전자 (데모)',
+            'current': closes[-1], 'change': round(change,2),
+            'change_pct': round(change/closes[-2]*100,2),
+            'high52': max(closes), 'low52': min(closes),
+            'dates': dates, 'closes': closes,
+            'ma5': ma5, 'ma20': ma20, 'volumes': volumes,
+        })
+
+    except Exception as e:
+        return JsonResponse({'error': f'데이터 조회 실패: {str(e)}'}, status=500)
+
+
+# ── 뉴스 크롤링 데모 ──────────────────────────────────────────────────────────
+
+def news_demo(request):
+    return render(request, 'ai_demo/news.html')
+
+
+@csrf_exempt
+def news_api(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POST only'}, status=405)
+
+    try:
+        data = json.loads(request.body)
+        keyword = data.get('keyword', 'AI').strip()
+        if not keyword:
+            keyword = 'AI'
+    except Exception:
+        keyword = 'AI'
+
+    if len(keyword) > 50:
+        return JsonResponse({'error': '키워드는 50자 이하로 입력해주세요.'}, status=400)
+
+    try:
+        import requests as req
+        from bs4 import BeautifulSoup
+
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        }
+
+        url = f'https://search.naver.com/search.naver?where=news&query={keyword}&sort=1&ds=&de=&nso=so%3Add%2Cp%3Aall'
+        resp = req.get(url, headers=headers, timeout=8)
+        soup = BeautifulSoup(resp.text, 'html.parser')
+
+        articles = []
+        items = soup.select('.news_wrap')[:8]
+
+        for item in items:
+            title_el = item.select_one('.news_tit')
+            desc_el = item.select_one('.dsc_wrap') or item.select_one('.api_txt_lines')
+            info_el = item.select_one('.info_group') or item.select_one('.news_info')
+            press_el = item.select_one('.info_press') or item.select_one('.press')
+            date_el = item.select_one('.info_group span:last-child') or item.select_one('span.info')
+
+            if not title_el:
+                continue
+
+            title = title_el.get_text(strip=True)
+            link = title_el.get('href', '#')
+            desc = desc_el.get_text(strip=True)[:120] + '...' if desc_el else '내용 없음'
+            press = press_el.get_text(strip=True) if press_el else '언론사 미상'
+            date = date_el.get_text(strip=True) if date_el else ''
+
+            articles.append({
+                'title': title,
+                'link': link,
+                'desc': desc,
+                'press': press,
+                'date': date,
+            })
+
+        if not articles:
+            raise ValueError("기사를 찾을 수 없습니다")
+
+        return JsonResponse({
+            'success': True,
+            'keyword': keyword,
+            'count': len(articles),
+            'articles': articles,
+            'source': '네이버 뉴스',
+        })
+
+    except ImportError:
+        pass
+    except Exception:
+        pass
+
+    # 폴백: 더미 뉴스 데이터
+    dummy = [
+        {'title': f'[{keyword}] 최신 기술 동향과 미래 전망', 'link': '#', 'press': '연합뉴스', 'date': '1시간 전', 'desc': f'{keyword} 분야에서 새로운 기술적 진보가 이루어지고 있습니다. 전문가들은 이번 발전이 산업 전반에 큰 영향을 미칠 것으로 전망합니다.'},
+        {'title': f'{keyword} 시장 급성장... 기업들 앞다퉈 투자', 'link': '#', 'press': '조선일보', 'date': '2시간 전', 'desc': f'국내외 주요 기업들이 {keyword} 기술에 대한 투자를 확대하고 있습니다. 시장 규모가 올해 대비 2배 이상 성장할 것으로 예측됩니다.'},
+        {'title': f'정부, {keyword} 육성 정책 발표... 1조원 투자 계획', 'link': '#', 'press': '한겨레', 'date': '3시간 전', 'desc': f'정부가 {keyword} 분야 육성을 위한 대규모 투자 계획을 발표했습니다. 스타트업 지원과 인재 양성에 초점을 맞출 예정입니다.'},
+        {'title': f'{keyword} 스타트업 시리즈A 투자 유치 성공', 'link': '#', 'press': '매일경제', 'date': '5시간 전', 'desc': f'{keyword} 전문 스타트업이 100억원 규모의 시리즈A 투자를 유치했습니다. 글로벌 시장 진출을 목표로 하고 있습니다.'},
+        {'title': f'대학교 {keyword} 관련 학과 신설 붐... 취업률 90% 육박', 'link': '#', 'press': '동아일보', 'date': '7시간 전', 'desc': f'{keyword} 관련 학과를 신설하는 대학이 늘어나고 있습니다. 높은 취업률로 인해 입학 경쟁도 치열해지고 있습니다.'},
+    ]
+
+    return JsonResponse({
+        'success': True, 'demo': True,
+        'keyword': keyword,
+        'count': len(dummy),
+        'articles': dummy,
+        'source': '네이버 뉴스 (데모)',
+    })

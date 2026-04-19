@@ -12,4 +12,8 @@ urlpatterns = [
     path('api/summarize/', views.summarize_api, name='summarize_api'),
     path('chatbot/', views.chatbot, name='chatbot'),
     path('api/chatbot/', views.chatbot_api, name='chatbot_api'),
+    path('stock/', views.stock_demo, name='stock_demo'),
+    path('api/stock/', views.stock_api, name='stock_api'),
+    path('news/', views.news_demo, name='news_demo'),
+    path('api/news/', views.news_api, name='news_api'),
 ]

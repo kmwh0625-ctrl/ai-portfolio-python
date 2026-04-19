@@ -21,12 +21,12 @@
     "pk": 2,
     "fields": {
       "title": "한국 주식 데이터 분석 대시보드",
-      "subtitle": "KOSPI 종목 시각화 및 트렌드 분석",
+      "subtitle": "KOSPI 종목 시각화 및 트렌드 분석 대시보드",
       "description": "Python pandas와 matplotlib을 활용해 KOSPI 상장 종목의 주가 데이터를 수집하고 시각화한 분석 대시보드. 이동평균선, 거래량 분석, 섹터별 수익률 비교 기능을 구현했습니다. yfinance API로 실시간 데이터를 수집합니다.",
       "category": "data",
       "tech_stack": "Python, Pandas, Matplotlib, Plotly, yfinance, Jupyter Notebook",
       "github_url": "",
-      "demo_url": "",
+      "demo_url": "https://ai-portfolio-51tv.onrender.com/ai/stock/",
       "image": "",
       "is_featured": true,
       "order": 2,
@@ -38,12 +38,12 @@
     "pk": 3,
     "fields": {
       "title": "뉴스 자동 수집 및 요약 봇",
-      "subtitle": "BeautifulSoup + AI 요약 자동화 시스템",
+      "subtitle": "BeautifulSoup 기반 실시간 뉴스 자동 수집 시스템",
       "description": "BeautifulSoup과 Selenium으로 주요 언론사 뉴스를 자동 크롤링하고, AI 모델로 핵심 내용을 요약하는 자동화 시스템. 매일 오전 9시 스케줄러가 동작해 분야별 뉴스를 수집하고 정리합니다.",
       "category": "web",
       "tech_stack": "Python, BeautifulSoup, Selenium, Schedule, SQLite, Django",
       "github_url": "",
-      "demo_url": "",
+      "demo_url": "https://ai-portfolio-51tv.onrender.com/ai/news/",
       "image": "",
       "is_featured": true,
       "order": 3,
@@ -185,6 +185,56 @@
       "proficiency": 70,
       "category": "DevOps",
       "order": 3
+    }
+  },
+  {
+    "model": "portfolio.skill",
+    "pk": 13,
+    "fields": {
+      "name": "Photoshop",
+      "proficiency": 75,
+      "category": "Design",
+      "order": 1
+    }
+  },
+  {
+    "model": "portfolio.skill",
+    "pk": 14,
+    "fields": {
+      "name": "Figma",
+      "proficiency": 80,
+      "category": "Design",
+      "order": 2
+    }
+  },
+  {
+    "model": "portfolio.skill",
+    "pk": 15,
+    "fields": {
+      "name": "Illustrator",
+      "proficiency": 70,
+      "category": "Design",
+      "order": 3
+    }
+  },
+  {
+    "model": "portfolio.skill",
+    "pk": 16,
+    "fields": {
+      "name": "After Effects",
+      "proficiency": 65,
+      "category": "Design",
+      "order": 4
+    }
+  },
+  {
+    "model": "portfolio.skill",
+    "pk": 17,
+    "fields": {
+      "name": "Premiere Pro",
+      "proficiency": 70,
+      "category": "Design",
+      "order": 5
     }
   }
 ]

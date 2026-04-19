@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+{% block title %}뉴스 크롤링 데모{% endblock %}
+
+{% block extra_css %}
+<style>
+  .demo-hero {
+    background: linear-gradient(135deg, #1a2340 0%, #2a1a10 100%);
+    color: white; padding: 60px 24px; text-align: center;
+  }
+  .demo-hero-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(0,201,167,.15); border: 1px solid rgba(0,201,167,.3);
+    color: var(--accent); padding: 5px 14px; border-radius: 100px;
+    font-size: 12px; font-weight: 700; letter-spacing: .08em;
+    text-transform: uppercase; margin-bottom: 20px;
+  }
+  .demo-hero h1 { font-family: var(--font-display); font-size: clamp(28px,4vw,46px); font-weight: 800; margin-bottom: 14px; }
+  .demo-hero p { color: rgba(255,255,255,.7); font-size: 16px; }
+
+  .demo-wrap { max-width: 860px; margin: 48px auto; padding: 0 24px; display: flex; flex-direction: column; gap: 24px; }
+
+  .panel { background: white; border-radius: var(--radius-lg); border: 1px solid var(--gray-200); overflow: hidden; }
+  .panel-header {
+    background: var(--gray-100); border-bottom: 1px solid var(--gray-200);
+    padding: 16px 24px; display: flex; align-items: center; gap: 10px;
+  }
+  .panel-header-icon { width: 34px; height: 34px; border-radius: 9px; background: var(--green); display: flex; align-items: center; justify-content: center; color: white; font-size: 14px; }
+  .panel-header-title { font-weight: 700; color: var(--navy); font-size: 15px; }
+  .panel-body { padding: 24px; }
+
+  .search-row { display: flex; gap: 12px; }
+  .search-input {
+    flex: 1; border: 2px solid var(--gray-200); border-radius: var(--radius);
+    padding: 12px 16px; font-family: var(--font-kr); font-size: 14px;
+    color: var(--navy); transition: var(--transition); outline: none; background: var(--gray-100);
+  }
+  .search-input:focus { border-color: var(--green); background: white; }
+
+  .search-btn {
+    padding: 12px 24px; background: var(--green); color: white;
+    border: none; border-radius: var(--radius); font-size: 14px; font-weight: 700;
+    cursor: pointer; transition: var(--transition); font-family: var(--font-kr);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .search-btn:hover { background: var(--green-dark); }
+  .search-btn:disabled { opacity: .6; cursor: not-allowed; }
+
+  .keyword-btns { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+  .keyword-btn {
+    background: var(--gray-100); border: 1px solid var(--gray-200);
+    border-radius: 20px; padding: 6px 14px; font-size: 12px; font-weight: 600;
+    cursor: pointer; color: var(--gray-700); transition: var(--transition); font-family: var(--font-kr);
+  }
+  .keyword-btn:hover { background: var(--green-light); border-color: var(--green); color: var(--green-dark); }
+
+  .loading-bar { height: 4px; background: var(--gray-200); border-radius: 2px; overflow: hidden; margin-top: 14px; display: none; }
+  .loading-bar-fill { height: 100%; background: linear-gradient(90deg,var(--green),var(--accent),var(--green)); background-size: 200%; animation: shimmer 1.2s infinite; width: 100%; }
+  @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+  /* 결과 */
+  .result-panel { display: none; }
+  .result-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .result-count { font-size: 14px; color: var(--gray-500); }
+  .result-count strong { color: var(--green); font-size: 18px; }
+  .source-badge { background: var(--green-light); color: var(--green-dark); padding: 4px 12px; border-radius: 100px; font-size: 12px; font-weight: 700; }
+
+  .news-list { display: flex; flex-direction: column; gap: 16px; }
+
+  .news-item {
+    border: 1px solid var(--gray-200); border-radius: var(--radius-lg);
+    padding: 20px; transition: var(--transition);
+    text-decoration: none; color: inherit; display: block;
+  }
+  .news-item:hover { border-color: var(--green); box-shadow: var(--shadow-sm); transform: translateX(4px); }
+
+  .news-item-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+  .news-title { font-size: 15px; font-weight: 700; color: var(--navy); line-height: 1.4; flex: 1; }
+  .news-item:hover .news-title { color: var(--green); }
+
+  .news-arrow { color: var(--gray-300); font-size: 14px; flex-shrink: 0; margin-top: 2px; }
+  .news-item:hover .news-arrow { color: var(--green); }
+
+  .news-desc { font-size: 13px; color: var(--gray-500); line-height: 1.7; margin-bottom: 12px; }
+
+  .news-meta { display: flex; align-items: center; gap: 12px; }
+  .news-press { background: var(--gray-100); color: var(--gray-700); padding: 3px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; }
+  .news-date { font-size: 12px; color: var(--gray-500); font-family: var(--font-mono); }
+
+  .demo-badge { background: #fef3c7; border: 1px solid #fcd34d; color: #92400e; padding: 10px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; margin-top: 16px; display: none; }
+
+  .how-it-works {
+    background: var(--gray-100); border-radius: var(--radius-lg); padding: 24px;
+  }
+  .how-title { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .steps { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
+  .step { text-align: center; }
+  .step-icon { width: 44px; height: 44px; border-radius: 12px; background: var(--green); color: white; font-size: 18px; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; }
+  .step-label { font-size: 12px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+  .step-desc { font-size: 11px; color: var(--gray-500); line-height: 1.5; }
+
+  @media(max-width:600px){ .steps{grid-template-columns:repeat(2,1fr);} .search-row{flex-direction:column;} }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="demo-hero">
+  <div class="demo-hero-tag"><i class="fas fa-newspaper"></i> AI Demo</div>
+  <h1>📰 실시간 뉴스 크롤링</h1>
+  <p>키워드를 입력하면 최신 뉴스를 자동으로 수집해드려요</p>
+</div>
+
+<div class="demo-wrap">
+  <!-- 검색 패널 -->
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-header-icon"><i class="fas fa-search"></i></div>
+      <div class="panel-header-title">키워드 검색</div>
+    </div>
+    <div class="panel-body">
+      <div class="search-row">
+        <input type="text" class="search-input" id="keywordInput" placeholder="검색할 키워드를 입력하세요 (예: 인공지능, 주식, 취업)" maxlength="50"
+               onkeydown="if(event.key==='Enter') crawlNews()" />
+        <button class="search-btn" id="searchBtn" onclick="crawlNews()">
+          <i class="fas fa-spider"></i> 크롤링 시작
+        </button>
+      </div>
+      <div class="keyword-btns">
+        <span style="font-size:12px;color:var(--gray-500);font-weight:600;align-self:center">인기 키워드:</span>
+        <button class="keyword-btn" onclick="quickCrawl('인공지능')">🤖 인공지능</button>
+        <button class="keyword-btn" onclick="quickCrawl('Python')">🐍 Python</button>
+        <button class="keyword-btn" onclick="quickCrawl('취업')">💼 취업</button>
+        <button class="keyword-btn" onclick="quickCrawl('삼성전자')">📱 삼성전자</button>
+        <button class="keyword-btn" onclick="quickCrawl('ChatGPT')">💬 ChatGPT</button>
+        <button class="keyword-btn" onclick="quickCrawl('개발자')">👨‍💻 개발자</button>
+      </div>
+      <div class="loading-bar" id="loadingBar"><div class="loading-bar-fill"></div></div>
+    </div>
+  </div>
+
+  <!-- 작동 원리 -->
+  <div class="how-it-works">
+    <div class="how-title"><i class="fas fa-cogs" style="color:var(--green)"></i> 크롤링 작동 원리</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-icon"><i class="fas fa-keyboard"></i></div>
+        <div class="step-label">① 키워드 입력</div>
+        <div class="step-desc">사용자가 검색할 키워드를 입력합니다</div>
+      </div>
+      <div class="step">
+        <div class="step-icon"><i class="fas fa-globe"></i></div>
+        <div class="step-label">② HTTP 요청</div>
+        <div class="step-desc">requests 라이브러리로 네이버 뉴스에 요청을 보냅니다</div>
+      </div>
+      <div class="step">
+        <div class="step-icon"><i class="fas fa-code"></i></div>
+        <div class="step-label">③ HTML 파싱</div>
+        <div class="step-desc">BeautifulSoup으로 HTML을 분석해 기사를 추출합니다</div>
+      </div>
+      <div class="step">
+        <div class="step-icon"><i class="fas fa-list"></i></div>
+        <div class="step-label">④ 결과 표시</div>
+        <div class="step-desc">추출한 뉴스를 정리해서 화면에 표시합니다</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 결과 패널 -->
+  <div class="panel result-panel" id="resultPanel">
+    <div class="panel-header">
+      <div class="panel-header-icon"><i class="fas fa-list"></i></div>
+      <div class="panel-header-title" id="resultTitle">검색 결과</div>
+    </div>
+    <div class="panel-body">
+      <div class="result-meta">
+        <div class="result-count"><strong id="resultCount">0</strong>개의 기사를 수집했습니다</div>
+        <div class="source-badge" id="sourceBadge">네이버 뉴스</div>
+      </div>
+      <div class="news-list" id="newsList"></div>
+      <div class="demo-badge" id="demoBadge">⚠️ BeautifulSoup 미설치 환경 — 샘플 데이터를 표시 중입니다. 실제 환경에서는 실시간 뉴스가 수집됩니다.</div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function quickCrawl(keyword) {
+    document.getElementById('keywordInput').value = keyword;
+    crawlNews();
+  }
+
+  async function crawlNews() {
+    const keyword = document.getElementById('keywordInput').value.trim();
+    if (!keyword) { alert('키워드를 입력해주세요.'); return; }
+
+    const btn = document.getElementById('searchBtn');
+    const bar = document.getElementById('loadingBar');
+    btn.disabled = true;
+    bar.style.display = 'block';
+    document.getElementById('resultPanel').style.display = 'none';
+
+    try {
+      const res = await fetch('/ai/api/news/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+        body: JSON.stringify({ keyword }),
+      });
+      const data = await res.json();
+      bar.style.display = 'none';
+
+      if (!data.success) { alert(data.error || '크롤링 실패'); btn.disabled = false; return; }
+
+      document.getElementById('resultPanel').style.display = 'block';
+      document.getElementById('resultTitle').textContent = `"${data.keyword}" 뉴스 수집 결과`;
+      document.getElementById('resultCount').textContent = data.count;
+      document.getElementById('sourceBadge').textContent = data.source;
+      document.getElementById('demoBadge').style.display = data.demo ? 'block' : 'none';
+
+      const list = document.getElementById('newsList');
+      list.innerHTML = data.articles.map(a => `
+        <a href="${a.link}" target="_blank" rel="noopener noreferrer" class="news-item">
+          <div class="news-item-header">
+            <div class="news-title">${a.title}</div>
+            <div class="news-arrow"><i class="fas fa-external-link-alt"></i></div>
+          </div>
+          <div class="news-desc">${a.desc}</div>
+          <div class="news-meta">
+            <span class="news-press">${a.press}</span>
+            ${a.date ? `<span class="news-date">${a.date}</span>` : ''}
+          </div>
+        </a>
+      `).join('');
+
+    } catch(e) {
+      bar.style.display = 'none';
+      alert('서버 오류가 발생했습니다.');
+    }
+    btn.disabled = false;
+  }
+
+  function getCookie(name) {
+    let val = null;
+    document.cookie.split(';').forEach(c => {
+      c = c.trim();
+      if (c.startsWith(name + '=')) val = decodeURIComponent(c.slice(name.length + 1));
+    });
+    return val;
+  }
+</script>
+{% endblock %}
